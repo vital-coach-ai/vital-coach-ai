@@ -15,7 +15,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .logo-header p{font-size:13px;color:#666;margin-top:2px;}
 .tab-row{display:flex;border:1px solid #e5e5e5;border-radius:10px;overflow:hidden;margin-bottom:1.5rem;background:#fff;}
 .tab{flex:1;padding:10px 8px;font-size:13px;font-weight:500;background:transparent;color:#888;border:none;cursor:pointer;transition:all 0.15s;}
-.tab:first-child{border-right:1px solid #e5e5e5;}
+.tab:not(:last-child){border-right:1px solid #e5e5e5;}
 .tab.active{background:#E82C2C;color:#fff;}
 .section{margin-bottom:1.25rem;}
 .section label,.field-label{font-size:13px;color:#666;display:block;margin-bottom:6px;white-space:nowrap;}
@@ -57,6 +57,10 @@ input[type=number],select{width:100%;font-size:14px;font-family:inherit;border-r
 .page.active{display:block;}
 .card{background:#fff;border-radius:12px;border:1px solid #e5e5e5;padding:1rem 1.25rem;margin-bottom:1rem;}
 
+.plan-hero{text-align:center;padding:1.5rem 0.5rem 1.25rem;margin-bottom:1.25rem;}
+.plan-hero h1{font-size:22px;font-weight:800;color:#1a1a1a;line-height:1.3;margin:0 0 10px;}
+.plan-hero h1 span{color:#E82C2C;}
+.plan-hero p{font-size:14px;color:#666;line-height:1.6;margin:0;}
 .paywall{background:#fff;border-radius:16px;border:1px solid #e5e5e5;padding:2rem 1.5rem;text-align:center;margin:1rem 0;}
 .paywall h2{font-size:20px;font-weight:700;color:#1a1a1a;margin-bottom:8px;}
 .paywall p{font-size:14px;color:#666;margin-bottom:1.5rem;line-height:1.6;}
@@ -67,6 +71,19 @@ input[type=number],select{width:100%;font-size:14px;font-family:inherit;border-r
 .paywall ul li::before{content:"✓ ";color:#E82C2C;font-weight:700;}
 .upgrade-btn{width:100%;padding:14px;background:#E82C2C;color:#fff;border:none;border-radius:10px;font-size:16px;font-weight:600;cursor:pointer;}
 .upgrade-btn:hover{background:#c01f1f;}
+.rc-onboard-step{margin-bottom:1.5rem;}
+.rc-onboard-step label{font-size:15px;font-weight:700;color:#1a1a1a;display:block;margin-bottom:10px;}
+.rc-btn-grid{display:flex;flex-wrap:wrap;gap:8px;}
+.rc-btn{padding:9px 16px;border-radius:8px;border:1.5px solid #e5e5e5;background:#fff;font-size:13px;font-weight:500;color:#444;cursor:pointer;transition:all 0.15s;}
+.rc-btn.selected{border-color:#E82C2C;background:#fff5f5;color:#c01f1f;font-weight:600;}
+.rc-locked{text-align:center;padding:2rem 1rem;}
+.rc-locked h3{font-size:17px;font-weight:700;color:#1a1a1a;margin-bottom:8px;}
+.rc-locked p{font-size:14px;color:#666;margin-bottom:1.25rem;line-height:1.6;}
+.rc-score-locked{background:#fafafa;border:1px solid #e5e5e5;border-radius:10px;padding:1rem;text-align:center;margin-top:1rem;}
+.rc-score-locked p{font-size:13px;color:#888;margin-bottom:8px;}
+.rc-score{background:#f5fff8;border:1px solid #b6e8c7;border-radius:10px;padding:1rem;text-align:center;margin-top:1rem;}
+.rc-score h4{font-size:15px;font-weight:700;color:#2a7a4a;margin-bottom:4px;}
+.rc-score p{font-size:13px;color:#555;}
 .pro-badge{display:inline-block;background:#E82C2C;color:#fff;font-size:10px;font-weight:700;padding:2px 7px;border-radius:999px;margin-left:6px;vertical-align:middle;}
 </style>
 </head>
@@ -83,6 +100,7 @@ input[type=number],select{width:100%;font-size:14px;font-family:inherit;border-r
   <div class="tab-row">
     <button class="tab" onclick="switchTab('checkin',this)">&#9825; Daily Check-in</button>
     <button class="tab active" onclick="switchTab('plan',this)">&#9998; Build My Plan</button>
+    <button class="tab" onclick="switchTab('realitycheck',this);renderRealityCheck()">&#9889; Reality Check</button>
   </div>
 
   <div id="checkin" class="page">
@@ -151,6 +169,10 @@ input[type=number],select{width:100%;font-size:14px;font-family:inherit;border-r
   </div>
 
   <div id="plan" class="page active">
+  <div class="plan-hero">
+    <h1>Your free personalized fitness plan,<br><span>built by AI in 60 seconds</span></h1>
+    <p>Answer a few quick questions and get a custom workout routine + diet plan tailored to your goals</p>
+  </div>
   <div id="paywallSection" style="display:none;">
     <div class="paywall">
       <div class="price">$9<span>/month</span></div>
@@ -173,9 +195,13 @@ input[type=number],select{width:100%;font-size:14px;font-family:inherit;border-r
         <label style="font-weight:600;color:#1a1a1a;">Basic info</label>
         <div class="row3" style="margin-top:8px;margin-bottom:10px;">
           <div><span class="field-label">Age</span><input type="number" id="age" min="16" max="99" placeholder="e.g. 28"></div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
-            <div><span class="field-label">ft</span><input type="number" id="heightFt" min="3" max="8" placeholder="5"></div>
-            <div><span class="field-label">in</span><input type="number" id="heightIn" min="0" max="11" placeholder="10"></div>
+          <div>
+            <span class="field-label">Height</span>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:4px;">
+              <div><span class="field-label">ft</span><input type="number" id="heightFt" min="3" max="8" placeholder="5"></div>
+              <div><span class="field-label">in</span><input type="number" id="heightIn" min="0" max="11" placeholder="10"></div>
+            </div>
+            <small style="color:#aaa;font-size:11px;margin-top:3px;display:block;">e.g. 5 ft 10 in</small>
           </div>
           <div><span class="field-label">Weight (lbs)</span><input type="number" id="weight" placeholder="e.g. 165"></div>
         </div>
@@ -231,7 +257,6 @@ input[type=number],select{width:100%;font-size:14px;font-family:inherit;border-r
         <button class="pill multi" onclick="togglePill(this)">Kosher</button>
         <button class="pill multi" onclick="togglePill(this)">Keto / low-carb</button>
         <button class="pill multi" onclick="togglePill(this)">High-protein</button>
-        <button class="pill multi" onclick="togglePill(this)">No restrictions</button>
       </div>
     </div>
     <div class="section">
@@ -248,6 +273,11 @@ input[type=number],select{width:100%;font-size:14px;font-family:inherit;border-r
   </div>
 
   </div></div>
+
+  <div id="realitycheck" class="page">
+    <div id="rcContent"></div>
+  </div>
+
 <script>
 let mood='',energy='',goal='',workout='',days='',workoutDone='',waterIntake='';
 function switchTab(id,btn){
@@ -331,7 +361,7 @@ async function generatePlan(){
   const activity=document.getElementById('activity').value;
   const conditions=document.getElementById('conditions').value.trim();
   const extra=document.getElementById('extra').value.trim();
-  const diet=getSelectedMulti().filter(s=>['Vegetarian','Vegan','Gluten-free','Dairy-free','Halal','Kosher','Keto / low-carb','High-protein','No restrictions'].includes(s));
+  const diet=getSelectedMulti().filter(s=>['Vegetarian','Vegan','Gluten-free','Dairy-free','Halal','Kosher','Keto / low-carb','High-protein'].includes(s));
   const prompt='You are an expert fitness and nutrition coach at Vital Coach AI. Create a personalized plan:\n\n- Age: '+(age||'?')+', Sex: '+(sex||'?')+'\n- Height: '+(height||'?')+', Weight: '+(weight||'?')+'lbs\n- Activity: '+(activity||'?')+'\n- Goal: '+goal+'\n- Workout: '+(workout||'?')+'\n- Days/week: '+(days||'?')+'\n- Diet: '+(diet.length?diet.join(', '):'none')+'\n- Conditions: '+(conditions||'none')+'\n- Notes: '+(extra||'none')+'\n\nProvide:\n1. **Weekly workout routine** with specific exercises, sets/reps\n2. **Sample daily diet plan** with meals and portions\n3. **Three key tips** personalized to their profile\nEnd with a short motivational note.';
   await callClaude(prompt,'planResponse','Your personalized plan');
   // Save plan context to localStorage for check-in use
@@ -446,6 +476,226 @@ async function startCheckout(callerBtn) {
     if(btn){btn.textContent='Upgrade to Pro — $9/month';btn.disabled=false;}
   }
 }
+
+// ── Reality Check ──────────────────────────────────────────────
+let rcWorkout='', rcEating='', rcEnergy='';
+
+function rcSelectBtn(btn, group) {
+  document.querySelectorAll('.rc-opt[data-group="'+group+'"]').forEach(b=>b.classList.remove('selected'));
+  btn.classList.add('selected');
+  if(group==='rcWorkout') rcWorkout=btn.dataset.val;
+  if(group==='rcEating') rcEating=btn.dataset.val;
+  if(group==='rcEnergy') rcEnergy=btn.dataset.val;
+}
+
+function rcOnboardSelect(btn, group) {
+  document.querySelectorAll('.rc-btn[data-group="'+group+'"]').forEach(b=>b.classList.remove('selected'));
+  btn.classList.add('selected');
+}
+
+function saveRcProfile() {
+  const goalBtn = document.querySelector('.rc-btn[data-group="rcGoal"].selected');
+  const daysBtn = document.querySelector('.rc-btn[data-group="rcDays"].selected');
+  const obstacleBtn = document.querySelector('.rc-btn[data-group="rcObstacle"].selected');
+  if(!goalBtn||!daysBtn||!obstacleBtn){alert('Please answer all three questions.');return;}
+  const profile = {goal:goalBtn.dataset.val, days:daysBtn.dataset.val, obstacle:obstacleBtn.dataset.val};
+  localStorage.setItem('vca_reality_check_profile', JSON.stringify(profile));
+  renderRealityCheck();
+}
+
+function todayStr(){return new Date().toISOString().slice(0,10);}
+
+function rcUsedToday(){
+  return localStorage.getItem('vca_rc_last_used') === todayStr();
+}
+
+function getRcCheckins(){
+  return JSON.parse(localStorage.getItem('vca_rc_checkins')||'[]');
+}
+
+function getWeeklyScore(){
+  const checkins = getRcCheckins();
+  const now = new Date();
+  const cutoff = new Date(now);
+  cutoff.setDate(cutoff.getDate()-6);
+  const recent = checkins.filter(c=>{
+    const d=new Date(c.date);
+    return d>=cutoff && d<=now;
+  });
+  const onTrack = recent.filter(c=>c.workout!=='No'||c.eating!=='No').length;
+  return {days: recent.length, onTrack};
+}
+
+function shouldShowWeekly(){
+  const checkins = getRcCheckins();
+  if(checkins.length < 7) return false;
+  const oldest = new Date(checkins[0].date);
+  const now = new Date();
+  const diffDays = Math.floor((now-oldest)/(1000*60*60*24));
+  return diffDays >= 7 || new Date().getDay() === 0;
+}
+
+function renderRealityCheck() {
+  const container = document.getElementById('rcContent');
+  if(!container) return;
+
+  // Onboarding: no profile yet
+  const profileRaw = localStorage.getItem('vca_reality_check_profile');
+  if(!profileRaw) {
+    container.innerHTML = `
+      <div class="plan-hero" style="padding-bottom:0.75rem;">
+        <h1>⚡ <span>Reality Check</span></h1>
+        <p>No fluff, no excuses — just honest accountability.</p>
+      </div>
+      <div class="card">
+        <div class="rc-onboard-step">
+          <label>What's your goal?</label>
+          <div class="rc-btn-grid">
+            <button class="rc-btn" data-group="rcGoal" data-val="Lose weight" onclick="rcOnboardSelect(this,'rcGoal')">Lose weight</button>
+            <button class="rc-btn" data-group="rcGoal" data-val="Build muscle" onclick="rcOnboardSelect(this,'rcGoal')">Build muscle</button>
+            <button class="rc-btn" data-group="rcGoal" data-val="Get active" onclick="rcOnboardSelect(this,'rcGoal')">Get active</button>
+            <button class="rc-btn" data-group="rcGoal" data-val="All of the above" onclick="rcOnboardSelect(this,'rcGoal')">All of the above</button>
+          </div>
+        </div>
+        <div class="rc-onboard-step">
+          <label>How many days per week can you realistically commit?</label>
+          <div class="rc-btn-grid">
+            <button class="rc-btn" data-group="rcDays" data-val="2" onclick="rcOnboardSelect(this,'rcDays')">2</button>
+            <button class="rc-btn" data-group="rcDays" data-val="3" onclick="rcOnboardSelect(this,'rcDays')">3</button>
+            <button class="rc-btn" data-group="rcDays" data-val="4" onclick="rcOnboardSelect(this,'rcDays')">4</button>
+            <button class="rc-btn" data-group="rcDays" data-val="5+" onclick="rcOnboardSelect(this,'rcDays')">5+</button>
+          </div>
+        </div>
+        <div class="rc-onboard-step" style="margin-bottom:0;">
+          <label>What's your biggest obstacle?</label>
+          <div class="rc-btn-grid">
+            <button class="rc-btn" data-group="rcObstacle" data-val="No motivation" onclick="rcOnboardSelect(this,'rcObstacle')">No motivation</button>
+            <button class="rc-btn" data-group="rcObstacle" data-val="Too busy" onclick="rcOnboardSelect(this,'rcObstacle')">Too busy</button>
+            <button class="rc-btn" data-group="rcObstacle" data-val="Don't know where to start" onclick="rcOnboardSelect(this,'rcObstacle')">Don't know where to start</button>
+            <button class="rc-btn" data-group="rcObstacle" data-val="Bad habits" onclick="rcOnboardSelect(this,'rcObstacle')">Bad habits</button>
+          </div>
+        </div>
+        <button class="ask-btn" style="margin-top:1.25rem;" onclick="saveRcProfile()">Let's Go ⚡</button>
+      </div>`;
+    return;
+  }
+
+  const profile = JSON.parse(profileRaw);
+  rcWorkout=''; rcEating=''; rcEnergy='';
+
+  // Already used today (free users)
+  if(!isPro && rcUsedToday()) {
+    container.innerHTML = `
+      <div class="plan-hero" style="padding-bottom:0.75rem;">
+        <h1>⚡ <span>Reality Check</span></h1>
+        <p>No fluff, no excuses — just honest accountability.</p>
+      </div>
+      <div class="card">
+        <div class="rc-locked">
+          <h3>You've used your free Reality Check for today.</h3>
+          <p>Upgrade to Pro for unlimited daily check-ins, weekly scores, and adaptive coaching.</p>
+          <button class="ask-btn" onclick="startCheckout()">Upgrade to Pro — $9/month</button>
+        </div>
+      </div>`;
+    return;
+  }
+
+  // Weekly score
+  let weeklyHtml = '';
+  if(shouldShowWeekly()) {
+    if(isPro) {
+      const score = getWeeklyScore();
+      weeklyHtml = `<div class="rc-score"><h4>📊 This week: ${score.onTrack}/${score.days} days on track</h4><p>Keep pushing — consistency compounds.</p></div>`;
+    } else {
+      weeklyHtml = `<div class="rc-score-locked"><p>🔒 Weekly scores are a Pro feature.</p><button class="rc-btn" onclick="startCheckout()" style="border-color:#E82C2C;color:#E82C2C;">Unlock with Pro</button></div>`;
+    }
+  }
+
+  container.innerHTML = `
+    <div class="plan-hero" style="padding-bottom:0.75rem;">
+      <h1>⚡ <span>Reality Check</span></h1>
+      <p>No fluff, no excuses — just honest accountability.</p>
+    </div>
+    ${weeklyHtml}
+    <div class="card" style="margin-top:${weeklyHtml?'1rem':'0'};">
+      <div class="rc-onboard-step">
+        <label>Did you work out today?</label>
+        <div class="rc-btn-grid">
+          <button class="rc-btn rc-opt" data-group="rcWorkout" data-val="Yes" onclick="rcSelectBtn(this,'rcWorkout')">Yes</button>
+          <button class="rc-btn rc-opt" data-group="rcWorkout" data-val="No" onclick="rcSelectBtn(this,'rcWorkout')">No</button>
+          <button class="rc-btn rc-opt" data-group="rcWorkout" data-val="Partially" onclick="rcSelectBtn(this,'rcWorkout')">Partially</button>
+        </div>
+      </div>
+      <div class="rc-onboard-step">
+        <label>Did you eat on track today?</label>
+        <div class="rc-btn-grid">
+          <button class="rc-btn rc-opt" data-group="rcEating" data-val="Yes" onclick="rcSelectBtn(this,'rcEating')">Yes</button>
+          <button class="rc-btn rc-opt" data-group="rcEating" data-val="No" onclick="rcSelectBtn(this,'rcEating')">No</button>
+          <button class="rc-btn rc-opt" data-group="rcEating" data-val="Partially" onclick="rcSelectBtn(this,'rcEating')">Partially</button>
+        </div>
+      </div>
+      <div class="rc-onboard-step">
+        <label>How's your energy?</label>
+        <div class="rc-btn-grid">
+          <button class="rc-btn rc-opt" data-group="rcEnergy" data-val="Low" onclick="rcSelectBtn(this,'rcEnergy')">Low</button>
+          <button class="rc-btn rc-opt" data-group="rcEnergy" data-val="Okay" onclick="rcSelectBtn(this,'rcEnergy')">Okay</button>
+          <button class="rc-btn rc-opt" data-group="rcEnergy" data-val="High" onclick="rcSelectBtn(this,'rcEnergy')">High</button>
+        </div>
+      </div>
+      <div class="rc-onboard-step" style="margin-bottom:0;">
+        <label style="font-weight:500;color:#666;">Any excuse you want to get ahead of? <span style="font-weight:400;">(optional)</span></label>
+        <textarea id="rcExcuse" placeholder="e.g. I was exhausted, had a long day at work..."></textarea>
+      </div>
+      <button class="ask-btn" style="margin-top:1.25rem;" onclick="submitRealityCheck()">Get Real With Me ⚡</button>
+    </div>
+    <div id="rcResponse"></div>`;
+}
+
+async function submitRealityCheck() {
+  if(!rcWorkout||!rcEating||!rcEnergy){alert('Please answer all three questions.');return;}
+  const profile = JSON.parse(localStorage.getItem('vca_reality_check_profile')||'{}');
+  const excuse = document.getElementById('rcExcuse')?.value.trim()||'';
+
+  // Save check-in to history
+  const checkins = getRcCheckins();
+  checkins.push({date:todayStr(), workout:rcWorkout, eating:rcEating, energy:rcEnergy});
+  if(checkins.length > 30) checkins.splice(0, checkins.length-30);
+  localStorage.setItem('vca_rc_checkins', JSON.stringify(checkins));
+
+  // Mark used today
+  if(!isPro) localStorage.setItem('vca_rc_last_used', todayStr());
+
+  const prompt = `You are a direct, no-nonsense fitness accountability coach. Your job is to be honest — not mean, but not soft either. Skip the wellness fluff.
+
+User profile:
+- Goal: ${profile.goal||'not set'}
+- Committed days/week: ${profile.days||'not set'}
+- Biggest obstacle: ${profile.obstacle||'not set'}
+
+Today's check-in:
+- Workout: ${rcWorkout}
+- Eating on track: ${rcEating}
+- Energy: ${rcEnergy}
+- Excuse offered: ${excuse||'none'}
+
+Instructions:
+- If they skipped their workout: call it out directly, don't let them off the hook. Reference their goal.
+- If they ate off track: be honest about what that means for their goal.
+- If they did well: acknowledge it briefly (1 sentence), then push them harder for tomorrow.
+- If they offered an excuse: address it head-on.
+- Always close with one concrete, specific action they can take RIGHT NOW or first thing tomorrow.
+- Keep it to 3-4 sentences. No bullet points. No fluff.`;
+
+  await callClaude(prompt, 'rcResponse', 'Reality check');
+
+  if(!isPro) {
+    const resp = document.getElementById('rcResponse');
+    if(resp && resp.textContent.length > 50) {
+      resp.innerHTML += '<div class="upgrade-nudge"><p>Want unlimited daily check-ins and weekly progress scores? Upgrade to Pro.</p><button onclick="startCheckout()">Upgrade to Pro</button></div>';
+    }
+  }
+}
+// ── End Reality Check ───────────────────────────────────────────
 
 checkSubscription();
 

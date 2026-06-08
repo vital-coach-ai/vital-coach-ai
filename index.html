@@ -39,8 +39,8 @@ input[type=number],select{width:100%;font-size:14px;font-family:inherit;border-r
 .response-card .body{font-size:14px;color:#444;line-height:1.7;}
 .plan-banner{background:#f5fff8;border:1px solid #b6e8c7;border-radius:10px;padding:10px 14px;margin-bottom:1rem;display:flex;align-items:center;gap:8px;font-size:13px;color:#2a7a4a;}
 .plan-banner span{font-weight:600;}
-.plan-banner-locked{background:#fafafa;border-color:#ddd;color:#555;flex-wrap:wrap;gap:6px;}
-.plan-banner-locked button{background:#E82C2C;color:#fff;border:none;border-radius:6px;padding:5px 14px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;}
+.plan-banner-locked{background:#fafafa;border-color:#ddd;color:#555;flex-direction:column;align-items:flex-start;gap:8px;}
+.plan-banner-locked button{background:#E82C2C;color:#fff;border:none;border-radius:6px;padding:6px 16px;font-size:12px;font-weight:600;cursor:pointer;}
 .upgrade-nudge{background:#fff5f5;border:1px solid #f5c0c0;border-radius:12px;padding:1.25rem;margin-top:1rem;text-align:center;}
 .upgrade-nudge p{font-size:13px;color:#555;line-height:1.6;margin-bottom:0.75rem;}
 .upgrade-nudge button{background:#E82C2C;color:#fff;border:none;border-radius:8px;padding:10px 20px;font-size:14px;font-weight:600;cursor:pointer;width:100%;}
@@ -360,7 +360,7 @@ function loadPlanBanner(){
     banner.style.display='flex';
   } else {
     banner.className='plan-banner plan-banner-locked';
-    banner.innerHTML='&#128274; <span>Connect your plan to your check-in &mdash; Upgrade to Pro</span><button onclick="startCheckout(this)">Upgrade to Pro</button>';
+    banner.innerHTML='&#128274; <span>Connect your plan to your check-in</span><button onclick="startCheckout(this)">Upgrade to Pro</button>';
     banner.style.display='flex';
   }
 }

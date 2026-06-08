@@ -37,6 +37,10 @@ input[type=number],select{width:100%;font-size:14px;font-family:inherit;border-r
 .response-card{background:#fff;border-radius:12px;padding:1.25rem;margin-top:1.25rem;border:1px solid #e5e5e5;}
 .response-card h3{font-size:14px;font-weight:600;color:#1a1a1a;margin-bottom:8px;}
 .response-card .body{font-size:14px;color:#444;line-height:1.7;}
+.upgrade-nudge{background:#fff5f5;border:1px solid #f5c0c0;border-radius:12px;padding:1.25rem;margin-top:1rem;text-align:center;}
+.upgrade-nudge p{font-size:13px;color:#555;line-height:1.6;margin-bottom:0.75rem;}
+.upgrade-nudge button{background:#E82C2C;color:#fff;border:none;border-radius:8px;padding:10px 20px;font-size:14px;font-weight:600;cursor:pointer;width:100%;}
+.upgrade-nudge button:hover{background:#c01f1f;}
 .loading-dots{display:inline-flex;gap:5px;align-items:center;height:20px;}
 .loading-dots span{width:7px;height:7px;border-radius:50%;background:#E82C2C;display:inline-block;animation:bounce 1.2s infinite;}
 .loading-dots span:nth-child(2){animation-delay:0.2s;}
@@ -109,6 +113,27 @@ input[type=number],select{width:100%;font-size:14px;font-family:inherit;border-r
         <button class="pill multi" onclick="togglePill(this)">&#129472; Meditated</button>
         <button class="pill multi" onclick="togglePill(this)">&#9728; Got outside</button>
         <button class="pill multi" onclick="togglePill(this)">&#128245; Screen break</button>
+      </div>
+    </div>
+    <div class="section">
+      <label>Did you complete today's workout?</label>
+      <div class="pill-row">
+        <button class="pill" data-group="workoutDone" onclick="selectPill(this,'workoutDone')">Yes</button>
+        <button class="pill" data-group="workoutDone" onclick="selectPill(this,'workoutDone')">Partial</button>
+        <button class="pill" data-group="workoutDone" onclick="selectPill(this,'workoutDone')">No</button>
+      </div>
+    </div>
+    <div class="section">
+      <label>Calories eaten today (rough estimate)</label>
+      <input type="number" id="calories" placeholder="e.g. 1800" min="0" max="10000">
+    </div>
+    <div class="section">
+      <label>Water intake today</label>
+      <div class="pill-row">
+        <button class="pill" data-group="water" onclick="selectPill(this,'water')">Under 4 cups</button>
+        <button class="pill" data-group="water" onclick="selectPill(this,'water')">4–6 cups</button>
+        <button class="pill" data-group="water" onclick="selectPill(this,'water')">6–8 cups</button>
+        <button class="pill" data-group="water" onclick="selectPill(this,'water')">8+ cups</button>
       </div>
     </div>
     <div class="section">
@@ -215,7 +240,7 @@ input[type=number],select{width:100%;font-size:14px;font-family:inherit;border-r
 
   </div></div>
 <script>
-let mood='',energy='',goal='',workout='',days='';
+let mood='',energy='',goal='',workout='',days='',workoutDone='',waterIntake='';
 function switchTab(id,btn){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
@@ -232,6 +257,8 @@ function selectPill(btn,group){
   if(group==='goal')goal=btn.textContent.trim();
   if(group==='workout')workout=btn.textContent.trim();
   if(group==='days')days=btn.textContent.trim();
+  if(group==='workoutDone')workoutDone=btn.textContent.trim();
+  if(group==='water')waterIntake=btn.textContent.trim();
 }
 function togglePill(btn){btn.classList.toggle('selected');}
 function getSelectedMulti(){return Array.from(document.querySelectorAll('.pill.multi.selected')).map(b=>b.textContent.trim());}
@@ -268,9 +295,14 @@ async function callClaude(prompt,targetId,heading){
 async function getCheckinAdvice(){
   if(!mood){alert('Please select a mood first!');return;}
   const notes=document.getElementById('notes').value.trim();
+  const calories=document.getElementById('calories').value.trim();
   const allHabits=getSelectedMulti();
-  const prompt='You are a warm wellness coach for Vital Coach AI. Check-in:\n- Mood: '+mood+'\n- Energy: '+(energy||'not specified')+'\n- Habits: '+(allHabits.length?allHabits.join(', '):'none')+'\n- Notes: '+(notes||'none')+'\n\nGive a short personalized response (3-5 sentences): acknowledge mood, give one actionable tip, close encouragingly. No bullet points.';
+  const prompt='You are a warm wellness coach for Vital Coach AI. Check-in:\n- Mood: '+mood+'\n- Energy: '+(energy||'not specified')+'\n- Workout completed: '+(workoutDone||'not specified')+'\n- Calories today: '+(calories?calories+' kcal':'not specified')+'\n- Water intake: '+(waterIntake||'not specified')+'\n- Habits: '+(allHabits.length?allHabits.join(', '):'none')+'\n- Notes: '+(notes||'none')+'\n\nGive a short personalized response (3-5 sentences): acknowledge their day, give one actionable tip based on their fitness data, close encouragingly. No bullet points.';
   await callClaude(prompt,'checkinResponse','Your coach says');
+  const resp=document.getElementById('checkinResponse');
+  if(resp&&resp.textContent.length>50){
+    resp.innerHTML+='<div class="upgrade-nudge"><p>Want your plan automatically adjusted based on your daily check-ins? Upgrade to Pro for adaptive recommendations, calorie tracking, and progress insights.</p><button onclick="startCheckout()">Upgrade to Pro</button></div>';
+  }
 }
 async function generatePlan(){
   if(!goal){alert('Please select a health goal.');return;}

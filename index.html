@@ -18,7 +18,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .tab:first-child{border-right:1px solid #e5e5e5;}
 .tab.active{background:#E82C2C;color:#fff;}
 .section{margin-bottom:1.25rem;}
-.section label,.field-label{font-size:13px;color:#666;display:block;margin-bottom:6px;}
+.section label,.field-label{font-size:13px;color:#666;display:block;margin-bottom:6px;white-space:nowrap;}
 textarea{width:100%;min-height:68px;resize:vertical;font-size:14px;font-family:inherit;border-radius:10px;border:1px solid #e5e5e5;padding:10px 12px;background:#fff;color:#1a1a1a;}
 input[type=number],select{width:100%;font-size:14px;font-family:inherit;border-radius:10px;border:1px solid #e5e5e5;padding:9px 12px;background:#fff;color:#1a1a1a;}
 .mood-row{display:flex;gap:10px;margin-bottom:1.5rem;}
@@ -142,8 +142,8 @@ input[type=number],select{width:100%;font-size:14px;font-family:inherit;border-r
         <label style="font-weight:600;color:#1a1a1a;">Basic info</label>
         <div class="row3" style="margin-top:8px;margin-bottom:10px;">
           <div><span class="field-label">Age</span><input type="number" id="age" min="16" max="99" placeholder="e.g. 28"></div>
-          <div><span class="field-label">Height (cm)</span><input type="number" id="height" placeholder="e.g. 175"></div>
-          <div><span class="field-label">Weight (kg)</span><input type="number" id="weight" placeholder="e.g. 72"></div>
+          <div><span class="field-label">Height (ft/in)</span><input type="text" id="height" placeholder="e.g. 5'10&quot;"></div>
+          <div><span class="field-label">Weight (lbs)</span><input type="number" id="weight" placeholder="e.g. 165"></div>
         </div>
         <div class="row2">
           <div><span class="field-label">Biological sex</span>
@@ -282,7 +282,7 @@ async function generatePlan(){
   const conditions=document.getElementById('conditions').value.trim();
   const extra=document.getElementById('extra').value.trim();
   const diet=getSelectedMulti().filter(s=>['Vegetarian','Vegan','Gluten-free','Dairy-free','Halal','Kosher','Keto / low-carb','High-protein','No restrictions'].includes(s));
-  const prompt='You are an expert fitness and nutrition coach at Vital Coach AI. Create a personalized plan:\n\n- Age: '+(age||'?')+', Sex: '+(sex||'?')+'\n- Height: '+(height||'?')+'cm, Weight: '+(weight||'?')+'kg\n- Activity: '+(activity||'?')+'\n- Goal: '+goal+'\n- Workout: '+(workout||'?')+'\n- Days/week: '+(days||'?')+'\n- Diet: '+(diet.length?diet.join(', '):'none')+'\n- Conditions: '+(conditions||'none')+'\n- Notes: '+(extra||'none')+'\n\nProvide:\n1. **Weekly workout routine** with specific exercises, sets/reps\n2. **Sample daily diet plan** with meals and portions\n3. **Three key tips** personalized to their profile\nEnd with a short motivational note.';
+  const prompt='You are an expert fitness and nutrition coach at Vital Coach AI. Create a personalized plan:\n\n- Age: '+(age||'?')+', Sex: '+(sex||'?')+'\n- Height: '+(height||'?')+', Weight: '+(weight||'?')+'lbs\n- Activity: '+(activity||'?')+'\n- Goal: '+goal+'\n- Workout: '+(workout||'?')+'\n- Days/week: '+(days||'?')+'\n- Diet: '+(diet.length?diet.join(', '):'none')+'\n- Conditions: '+(conditions||'none')+'\n- Notes: '+(extra||'none')+'\n\nProvide:\n1. **Weekly workout routine** with specific exercises, sets/reps\n2. **Sample daily diet plan** with meals and portions\n3. **Three key tips** personalized to their profile\nEnd with a short motivational note.';
   await callClaude(prompt,'planResponse','Your personalized plan');
 }
 

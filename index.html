@@ -81,11 +81,11 @@ input[type=number],select{width:100%;font-size:14px;font-family:inherit;border-r
   </div>
 
   <div class="tab-row">
-    <button class="tab active" onclick="switchTab('checkin',this)">&#9825; Daily Check-in</button>
-    <button class="tab" onclick="switchTab('plan',this)">&#9998; Build My Plan</button>
+    <button class="tab" onclick="switchTab('checkin',this)">&#9825; Daily Check-in</button>
+    <button class="tab active" onclick="switchTab('plan',this)">&#9998; Build My Plan</button>
   </div>
 
-  <div id="checkin" class="page active">
+  <div id="checkin" class="page">
     <div class="tag">Daily check-in</div>
     <div id="planBanner" style="display:none;" class="plan-banner">&#9989; <span id="planBannerText"></span></div>
     <p style="font-size:14px;color:#666;margin-bottom:1.25rem;">Log your mood and habits — your AI coach gives you personalized advice.</p>
@@ -150,7 +150,7 @@ input[type=number],select{width:100%;font-size:14px;font-family:inherit;border-r
     <div id="checkinResponse"></div>
   </div>
 
-  <div id="plan" class="page">
+  <div id="plan" class="page active">
   <div id="paywallSection" style="display:none;">
     <div class="paywall">
       <div class="price">$9<span>/month</span></div>

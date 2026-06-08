@@ -298,7 +298,12 @@ async function getCheckinAdvice(){
   const notes=document.getElementById('notes').value.trim();
   const calories=document.getElementById('calories').value.trim();
   const allHabits=getSelectedMulti();
-  const prompt='You are a warm wellness coach for Vital Coach AI. Check-in:\n- Mood: '+mood+'\n- Energy: '+(energy||'not specified')+'\n- Workout completed: '+(workoutDone||'not specified')+'\n- Calories today: '+(calories?calories+' kcal':'not specified')+'\n- Water intake: '+(waterIntake||'not specified')+'\n- Habits: '+(allHabits.length?allHabits.join(', '):'none')+'\n- Notes: '+(notes||'none')+'\n\nGive a short personalized response (3-5 sentences): acknowledge their day, give one actionable tip based on their fitness data, close encouragingly. No bullet points.';
+  const now=new Date();
+  const hour=now.getHours();
+  const timeStr=now.toLocaleTimeString([],{hour:'numeric',minute:'2-digit'});
+  const period=hour<12?'morning':hour<17?'afternoon':hour<21?'evening':'night';
+  const periodGuide=period==='morning'?'Most of the day is still ahead — focus on setting intentions, fueling well, and building momentum.':period==='afternoon'?'The day is in progress — focus on staying on track, energy management, and finishing strong.':period==='evening'?'The day is wrapping up — focus on recovery, reflection, and preparing for tomorrow.':'It\'s late — focus on winding down, sleep quality, and what they can reset tomorrow.';
+  const prompt='You are a warm wellness coach for Vital Coach AI. Check-in:\n- Time: '+timeStr+' ('+period+')\n- Mood: '+mood+'\n- Energy: '+(energy||'not specified')+'\n- Workout completed: '+(workoutDone||'not specified')+'\n- Calories today: '+(calories?calories+' kcal':'not specified')+'\n- Water intake: '+(waterIntake||'not specified')+'\n- Habits: '+(allHabits.length?allHabits.join(', '):'none')+'\n- Notes: '+(notes||'none')+'\n\n'+periodGuide+'\n\nGive a short personalized response (3-5 sentences): acknowledge the time of day and their check-in data, give one actionable tip that fits where they are in the day, close encouragingly. No bullet points.';
   await callClaude(prompt,'checkinResponse','Your coach says');
   const resp=document.getElementById('checkinResponse');
   if(resp&&resp.textContent.length>50){

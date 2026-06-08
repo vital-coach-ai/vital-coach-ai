@@ -257,7 +257,7 @@ function renderMarkdown(md){
 }
 async function callClaude(prompt,targetId,heading){
   const div=document.getElementById(targetId);
-  div.innerHTML='<div class="response-card"><h3>&#9825; '+heading+'</h3><div class="loading-dots"><span></span><span></span><span></span></div></div>';
+  div.innerHTML='<div class="response-card"><h3>&#9825; '+heading+'</h3><div class="loading-dots"><span></span><span></span><span></span></div><p style="font-size:13px;color:#888;margin-top:10px">Building your plan — this takes about 15 seconds…</p></div>';
   try{
     const res=await fetch('/.netlify/functions/claude-proxy',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-5',max_tokens:1000,messages:[{role:'user',content:prompt}]})});
     const data=await res.json();

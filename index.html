@@ -37,6 +37,10 @@ input[type=number],select{width:100%;font-size:14px;font-family:inherit;border-r
 .response-card{background:#fff;border-radius:12px;padding:1.25rem;margin-top:1.25rem;border:1px solid #e5e5e5;}
 .response-card h3{font-size:14px;font-weight:600;color:#1a1a1a;margin-bottom:8px;}
 .response-card .body{font-size:14px;color:#444;line-height:1.7;}
+.plan-banner{background:#f5fff8;border:1px solid #b6e8c7;border-radius:10px;padding:10px 14px;margin-bottom:1rem;display:flex;align-items:center;gap:8px;font-size:13px;color:#2a7a4a;}
+.plan-banner span{font-weight:600;}
+.plan-banner-locked{background:#fafafa;border-color:#ddd;color:#555;flex-wrap:wrap;gap:6px;}
+.plan-banner-locked button{background:#E82C2C;color:#fff;border:none;border-radius:6px;padding:5px 14px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;}
 .upgrade-nudge{background:#fff5f5;border:1px solid #f5c0c0;border-radius:12px;padding:1.25rem;margin-top:1rem;text-align:center;}
 .upgrade-nudge p{font-size:13px;color:#555;line-height:1.6;margin-bottom:0.75rem;}
 .upgrade-nudge button{background:#E82C2C;color:#fff;border:none;border-radius:8px;padding:10px 20px;font-size:14px;font-weight:600;cursor:pointer;width:100%;}
@@ -83,6 +87,7 @@ input[type=number],select{width:100%;font-size:14px;font-family:inherit;border-r
 
   <div id="checkin" class="page active">
     <div class="tag">Daily check-in</div>
+    <div id="planBanner" style="display:none;" class="plan-banner">&#9989; <span id="planBannerText"></span></div>
     <p style="font-size:14px;color:#666;margin-bottom:1.25rem;">Log your mood and habits — your AI coach gives you personalized advice.</p>
     <div class="section">
       <label>Mood right now</label>
@@ -168,7 +173,10 @@ input[type=number],select{width:100%;font-size:14px;font-family:inherit;border-r
         <label style="font-weight:600;color:#1a1a1a;">Basic info</label>
         <div class="row3" style="margin-top:8px;margin-bottom:10px;">
           <div><span class="field-label">Age</span><input type="number" id="age" min="16" max="99" placeholder="e.g. 28"></div>
-          <div><span class="field-label">Height (ft/in)</span><input type="text" id="height" placeholder="e.g. 5'10&quot;"></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+            <div><span class="field-label">ft</span><input type="number" id="heightFt" min="3" max="8" placeholder="5"></div>
+            <div><span class="field-label">in</span><input type="number" id="heightIn" min="0" max="11" placeholder="10"></div>
+          </div>
           <div><span class="field-label">Weight (lbs)</span><input type="number" id="weight" placeholder="e.g. 165"></div>
         </div>
         <div class="row2">
@@ -303,7 +311,9 @@ async function getCheckinAdvice(){
   const timeStr=now.toLocaleTimeString([],{hour:'numeric',minute:'2-digit'});
   const period=hour<12?'morning':hour<17?'afternoon':hour<21?'evening':'night';
   const periodGuide=period==='morning'?'Most of the day is still ahead — focus on setting intentions, fueling well, and building momentum.':period==='afternoon'?'The day is in progress — focus on staying on track, energy management, and finishing strong.':period==='evening'?'The day is wrapping up — focus on recovery, reflection, and preparing for tomorrow.':'It\'s late — focus on winding down, sleep quality, and what they can reset tomorrow.';
-  const prompt='You are a warm wellness coach for Vital Coach AI. Check-in:\n- Time: '+timeStr+' ('+period+')\n- Mood: '+mood+'\n- Energy: '+(energy||'not specified')+'\n- Workout completed: '+(workoutDone||'not specified')+'\n- Calories today: '+(calories?calories+' kcal':'not specified')+'\n- Water intake: '+(waterIntake||'not specified')+'\n- Habits: '+(allHabits.length?allHabits.join(', '):'none')+'\n- Notes: '+(notes||'none')+'\n\n'+periodGuide+'\n\nGive a short personalized response (3-5 sentences): acknowledge the time of day and their check-in data, give one actionable tip that fits where they are in the day, close encouragingly. No bullet points.';
+  const savedPlan=isPro?JSON.parse(localStorage.getItem('vca_plan_context')||'null'):null;
+  const planCtx=savedPlan?'\n\nUser\'s saved plan context:\n- Plan goal: '+savedPlan.goal+'\n- Stats: '+savedPlan.height+', '+savedPlan.weight+'lbs\n- Trains '+savedPlan.daysPerWeek+' days/week ('+savedPlan.workoutPref+')\n- Diet: '+(savedPlan.diet&&savedPlan.diet.length?savedPlan.diet.join(', '):'no restrictions')+'\n- Today is a '+(workoutDayToday(savedPlan.daysPerWeek)?'scheduled WORKOUT day':'scheduled REST day')+' based on their plan.':'';
+  const prompt='You are a warm wellness coach for Vital Coach AI. Check-in:\n- Time: '+timeStr+' ('+period+')\n- Mood: '+mood+'\n- Energy: '+(energy||'not specified')+'\n- Workout completed: '+(workoutDone||'not specified')+'\n- Calories today: '+(calories?calories+' kcal':'not specified')+'\n- Water intake: '+(waterIntake||'not specified')+'\n- Habits: '+(allHabits.length?allHabits.join(', '):'none')+'\n- Notes: '+(notes||'none')+planCtx+'\n\n'+periodGuide+'\n\nGive a short personalized response (3-5 sentences): acknowledge the time of day and their check-in data, give one actionable tip that fits where they are in the day'+(savedPlan?' and references their plan goal':'')+', close encouragingly. No bullet points.';
   await callClaude(prompt,'checkinResponse','Your coach says');
   const resp=document.getElementById('checkinResponse');
   if(resp&&resp.textContent.length>50){
@@ -313,7 +323,9 @@ async function getCheckinAdvice(){
 async function generatePlan(){
   if(!goal){alert('Please select a health goal.');return;}
   const age=document.getElementById('age').value;
-  const height=document.getElementById('height').value;
+  const heightFt=document.getElementById('heightFt').value;
+  const heightIn=document.getElementById('heightIn').value;
+  const height=(heightFt||heightIn)?(heightFt||'?')+"' "+(heightIn||'0')+'"':'?';
   const weight=document.getElementById('weight').value;
   const sex=document.getElementById('sex').value;
   const activity=document.getElementById('activity').value;
@@ -322,9 +334,38 @@ async function generatePlan(){
   const diet=getSelectedMulti().filter(s=>['Vegetarian','Vegan','Gluten-free','Dairy-free','Halal','Kosher','Keto / low-carb','High-protein','No restrictions'].includes(s));
   const prompt='You are an expert fitness and nutrition coach at Vital Coach AI. Create a personalized plan:\n\n- Age: '+(age||'?')+', Sex: '+(sex||'?')+'\n- Height: '+(height||'?')+', Weight: '+(weight||'?')+'lbs\n- Activity: '+(activity||'?')+'\n- Goal: '+goal+'\n- Workout: '+(workout||'?')+'\n- Days/week: '+(days||'?')+'\n- Diet: '+(diet.length?diet.join(', '):'none')+'\n- Conditions: '+(conditions||'none')+'\n- Notes: '+(extra||'none')+'\n\nProvide:\n1. **Weekly workout routine** with specific exercises, sets/reps\n2. **Sample daily diet plan** with meals and portions\n3. **Three key tips** personalized to their profile\nEnd with a short motivational note.';
   await callClaude(prompt,'planResponse','Your personalized plan');
+  // Save plan context to localStorage for check-in use
+  const planData={goal,height,weight,sex,activity,workoutPref:workout,daysPerWeek:days,diet,savedAt:new Date().toISOString()};
+  localStorage.setItem('vca_plan_context',JSON.stringify(planData));
+  loadPlanBanner();
 }
 
-let isPro = true;
+function workoutDayToday(daysPerWeek){
+  const day=new Date().getDay(); // 0=Sun
+  const schedules={'2':[1,4],'3':[1,3,5],'4':[1,2,4,5],'5':[1,2,3,4,5],'6':[1,2,3,4,5,6]};
+  const sched=schedules[String(daysPerWeek)]||schedules['3'];
+  return sched.includes(day);
+}
+
+function loadPlanBanner(){
+  const raw=localStorage.getItem('vca_plan_context');
+  const banner=document.getElementById('planBanner');
+  if(!banner) return;
+  if(!raw){banner.style.display='none';return;}
+  const p=JSON.parse(raw);
+  if(isPro){
+    const dayLabel=workoutDayToday(p.daysPerWeek)?'Workout day':'Rest day';
+    banner.className='plan-banner';
+    banner.innerHTML='&#9989; <span>Plan active &middot; Goal: '+p.goal+' &middot; Today: '+dayLabel+'</span>';
+    banner.style.display='flex';
+  } else {
+    banner.className='plan-banner plan-banner-locked';
+    banner.innerHTML='&#128274; <span>Connect your plan to your check-in &mdash; Upgrade to Pro</span><button onclick="startCheckout(this)">Upgrade to Pro</button>';
+    banner.style.display='flex';
+  }
+}
+
+let isPro = false;
 
 async function checkSubscription() {
   const params = new URLSearchParams(window.location.search);
@@ -354,20 +395,14 @@ async function checkSubscription() {
 function renderPlanTab() {
   const paywallEl = document.getElementById('paywallSection');
   const planFormEl = document.getElementById('planForm');
-  if (!paywallEl || !planFormEl) return;
-  if (isPro) {
-    paywallEl.style.display = 'none';
-    planFormEl.style.display = 'block';
-  } else {
-    paywallEl.style.display = 'block';
-    planFormEl.style.display = 'none';
-  }
+  if (paywallEl) paywallEl.style.display = 'none';
+  if (planFormEl) planFormEl.style.display = 'block';
+  loadPlanBanner();
 }
 
-async function startCheckout() {
-  const btn = document.getElementById('upgradeBtn');
-  btn.textContent = 'Loading...';
-  btn.disabled = true;
+async function startCheckout(callerBtn) {
+  const btn = callerBtn || document.getElementById('upgradeBtn');
+  if(btn){btn.textContent='Loading...';btn.disabled=true;}
   try {
     const res = await fetch('/.netlify/functions/create-checkout', {
       method: 'POST',
@@ -379,13 +414,11 @@ async function startCheckout() {
       window.location.href = data.url;
     } else {
       alert('Something went wrong. Please try again.');
-      btn.textContent = 'Upgrade to Pro — $9/month';
-      btn.disabled = false;
+      if(btn){btn.textContent='Upgrade to Pro — $9/month';btn.disabled=false;}
     }
   } catch(e) {
     alert('Something went wrong. Please try again.');
-    btn.textContent = 'Upgrade to Pro — $9/month';
-    btn.disabled = false;
+    if(btn){btn.textContent='Upgrade to Pro — $9/month';btn.disabled=false;}
   }
 }
 

@@ -316,7 +316,7 @@ async function getCheckinAdvice(){
   const prompt='You are a warm wellness coach for Vital Coach AI. Check-in:\n- Time: '+timeStr+' ('+period+')\n- Mood: '+mood+'\n- Energy: '+(energy||'not specified')+'\n- Workout completed: '+(workoutDone||'not specified')+'\n- Calories today: '+(calories?calories+' kcal':'not specified')+'\n- Water intake: '+(waterIntake||'not specified')+'\n- Habits: '+(allHabits.length?allHabits.join(', '):'none')+'\n- Notes: '+(notes||'none')+planCtx+'\n\n'+periodGuide+'\n\nGive a short personalized response (3-5 sentences): acknowledge the time of day and their check-in data, give one actionable tip that fits where they are in the day'+(savedPlan?' and references their plan goal':'')+', close encouragingly. No bullet points.';
   await callClaude(prompt,'checkinResponse','Your coach says');
   const resp=document.getElementById('checkinResponse');
-  if(resp&&resp.textContent.length>50){
+  if(!isPro&&resp&&resp.textContent.length>50){
     resp.innerHTML+='<div class="upgrade-nudge"><p>Want your plan automatically adjusted based on your daily check-ins? Upgrade to Pro for adaptive recommendations, calorie tracking, and progress insights.</p><button onclick="startCheckout()">Upgrade to Pro</button></div>';
   }
 }
@@ -360,7 +360,7 @@ function loadPlanBanner(){
     banner.style.display='flex';
   } else {
     banner.className='plan-banner plan-banner-locked';
-    banner.innerHTML='&#128274; <span>Connect your plan to your check-in</span><button onclick="startCheckout(this)">Upgrade to Pro</button>';
+    banner.innerHTML='&#128274; <span>Upgrade to Pro to connect your plan</span><button onclick="startCheckout(this)">Upgrade</button>';
     banner.style.display='flex';
   }
 }
@@ -383,11 +383,36 @@ async function checkSubscription() {
         localStorage.setItem('vca_pro', '1');
         localStorage.setItem('vca_email', data.email || '');
         window.history.replaceState({}, '', '/');
+      } else {
+        localStorage.removeItem('vca_pro');
       }
     } catch(e) {}
   }
-  if (localStorage.getItem('vca_pro') === '1') {
-    isPro = true;
+  if (!isPro) {
+    const storedEmail = localStorage.getItem('vca_email');
+    if (storedEmail) {
+      try {
+        const res = await fetch('/.netlify/functions/check-subscription-status', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({email: storedEmail})
+        });
+        const data = await res.json();
+        if (data.active) {
+          isPro = true;
+          localStorage.setItem('vca_pro', '1');
+        } else {
+          isPro = false;
+          localStorage.removeItem('vca_pro');
+        }
+      } catch(e) {
+        if (localStorage.getItem('vca_pro') === '1') {
+          isPro = true;
+        }
+      }
+    } else {
+      localStorage.removeItem('vca_pro');
+    }
   }
   renderPlanTab();
 }

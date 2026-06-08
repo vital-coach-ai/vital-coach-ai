@@ -87,6 +87,14 @@ input[type=number],select{width:100%;font-size:14px;font-family:inherit;border-r
 .rc-locked{text-align:center;padding:2rem 1rem;}
 .rc-locked h3{font-size:17px;font-weight:700;color:#1a1a1a;margin-bottom:8px;}
 .rc-locked p{font-size:14px;color:#666;margin-bottom:1.25rem;line-height:1.6;}
+.stat-cards{display:flex;flex-direction:column;gap:0.75rem;margin-bottom:1.25rem;}
+.stat-card{background:#111;color:#fff;border-radius:12px;padding:1.1rem 1.25rem;text-align:left;}
+.stat-card .stat-number{font-size:22px;font-weight:900;color:#E82C2C;line-height:1.2;margin-bottom:4px;}
+.stat-card .stat-text{font-size:14px;font-weight:600;line-height:1.4;margin-bottom:6px;}
+.stat-card .stat-source{font-size:11px;color:#999;font-weight:400;}
+.motivational-quote{background:#1a1a1a;color:#fff;border-radius:10px;padding:1rem 1.25rem;margin-bottom:1.25rem;border-left:4px solid #E82C2C;}
+.motivational-quote .quote-text{font-size:14px;font-style:italic;line-height:1.6;margin-bottom:4px;}
+.motivational-quote .quote-author{font-size:12px;color:#aaa;font-weight:600;}
 .rc-score-locked{background:#fafafa;border:1px solid #e5e5e5;border-radius:10px;padding:1rem;text-align:center;margin-top:1rem;}
 .rc-score-locked p{font-size:13px;color:#888;margin-bottom:8px;}
 .rc-score{background:#f5fff8;border:1px solid #b6e8c7;border-radius:10px;padding:1rem;text-align:center;margin-top:1rem;}
@@ -111,7 +119,7 @@ input[type=number],select{width:100%;font-size:14px;font-family:inherit;border-r
   <div class="tab-row">
     <button class="tab active" onclick="switchTab('checkin',this)">&#9825; Daily Check-in</button>
     <button class="tab" onclick="switchTab('plan',this)">&#9998; Build My Plan</button>
-    <button class="tab" onclick="switchTab('realitycheck',this);renderRealityCheck()">&#9889; Reality Check</button>
+    <button class="tab" onclick="switchTab('realitycheck',this);renderRealityCheck()">&#9889; Get Your Life Together</button>
   </div>
 
   <div id="checkin" class="page active">
@@ -356,6 +364,9 @@ async function getCheckinAdvice(){
   const prompt='You are a warm wellness coach for Vital Coach AI. Check-in:\n- Time: '+timeStr+' ('+period+')\n- Mood: '+mood+'\n- Energy: '+(energy||'not specified')+'\n- Workout completed: '+(workoutDone||'not specified')+'\n- Calories today: '+(calories?calories+' kcal':'not specified')+'\n- Water intake: '+(waterIntake||'not specified')+'\n- Habits: '+(allHabits.length?allHabits.join(', '):'none')+'\n- Notes: '+(notes||'none')+planCtx+'\n\n'+periodGuide+'\n\nGive a short personalized response (3-5 sentences): acknowledge the time of day and their check-in data, give one actionable tip that fits where they are in the day'+(savedPlan?' and references their plan goal':'')+', close encouragingly. No bullet points.';
   await callClaude(prompt,'checkinResponse','Your coach says');
   const resp=document.getElementById('checkinResponse');
+  if(resp&&resp.textContent.length>50){
+    resp.innerHTML+=quoteHtml();
+  }
   if(!isPro&&resp&&resp.textContent.length>50){
     resp.innerHTML+='<div class="upgrade-nudge"><p>Want your plan automatically adjusted based on your daily check-ins? Upgrade to Pro for adaptive recommendations, calorie tracking, and progress insights.</p><button onclick="startCheckout()">Upgrade to Pro</button></div>';
   }
@@ -487,7 +498,22 @@ async function startCheckout(callerBtn) {
   }
 }
 
-// ── Reality Check ──────────────────────────────────────────────
+// ── Get Your Life Together ──────────────────────────────────────
+const MOTIVATIONAL_QUOTES = [
+  {text: "We are what we repeatedly do. Excellence, then, is not an act, but a habit.", author: "Aristotle"},
+  {text: "Take care of your body. It's the only place you have to live.", author: "Jim Rohn"},
+  {text: "Discipline is the bridge between goals and accomplishment.", author: "Jim Rohn"},
+  {text: "It is not the mountain we conquer but ourselves.", author: "Sir Edmund Hillary"},
+  {text: "Success is the sum of small efforts repeated day in and day out.", author: "Robert Collier"},
+  {text: "The secret of your future is hidden in your daily routine.", author: "Mike Murdock"},
+  {text: "You don't have to be extreme, just consistent.", author: "Unknown"},
+  {text: "Motivation gets you started. Habit keeps you going.", author: "Jim Ryun"},
+  {text: "Your body can stand almost anything. It's your mind you have to convince.", author: "Unknown"},
+  {text: "The pain you feel today will be the strength you feel tomorrow.", author: "Arnold Schwarzenegger"}
+];
+function getRandomQuote(){return MOTIVATIONAL_QUOTES[Math.floor(Math.random()*MOTIVATIONAL_QUOTES.length)];}
+function quoteHtml(){const q=getRandomQuote();return `<div class="motivational-quote"><div class="quote-text">"${q.text}"</div><div class="quote-author">— ${q.author}</div></div>`;}
+
 let rcWorkout='', rcEating='', rcEnergy='';
 
 function rcSelectBtn(btn, group) {
@@ -554,7 +580,7 @@ function renderRealityCheck() {
   if(!profileRaw) {
     container.innerHTML = `
       <div class="plan-hero" style="padding-bottom:0.75rem;">
-        <h1>⚡ <span>Reality Check</span></h1>
+        <h1>⚡ <span>Get Your Life Together</span></h1>
         <p>No fluff, no excuses — just honest accountability.</p>
       </div>
       <div class="card">
@@ -597,13 +623,41 @@ function renderRealityCheck() {
   if(!isPro && rcUsedToday()) {
     container.innerHTML = `
       <div class="plan-hero" style="padding-bottom:0.75rem;">
-        <h1>⚡ <span>Reality Check</span></h1>
+        <h1>⚡ <span>Get Your Life Together</span></h1>
         <p>No fluff, no excuses — just honest accountability.</p>
+      </div>
+      <div class="stat-cards">
+        <div class="stat-card">
+          <div class="stat-number">#4</div>
+          <div class="stat-text">Physical inactivity is the 4th leading risk factor for global mortality.</div>
+          <div class="stat-source">Source: World Health Organization (WHO)</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">80%</div>
+          <div class="stat-text">of Americans don't get enough exercise to meet basic health guidelines.</div>
+          <div class="stat-source">Source: Centers for Disease Control and Prevention (CDC)</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">2×</div>
+          <div class="stat-text">Physically inactive people are twice as likely to develop heart disease.</div>
+          <div class="stat-source">Source: American Heart Association</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">1 in 10</div>
+          <div class="stat-text">Only 1 in 10 adults eat enough fruits and vegetables daily.</div>
+          <div class="stat-source">Source: Centers for Disease Control and Prevention (CDC)</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">75%</div>
+          <div class="stat-text">of US healthcare spending is linked to chronic diseases caused by poor lifestyle choices.</div>
+          <div class="stat-source">Source: Centers for Disease Control and Prevention (CDC)</div>
+        </div>
       </div>
       <div class="card">
         <div class="rc-locked">
-          <h3>You've used your free Reality Check for today.</h3>
+          <h3>You've used your free check-in for today.</h3>
           <p>Upgrade to Pro for unlimited daily check-ins, weekly scores, and adaptive coaching.</p>
+          ${quoteHtml()}
           <button class="ask-btn" onclick="startCheckout()">Upgrade to Pro — $9/month</button>
         </div>
       </div>`;
@@ -623,7 +677,7 @@ function renderRealityCheck() {
 
   container.innerHTML = `
     <div class="plan-hero" style="padding-bottom:0.75rem;">
-      <h1>⚡ <span>Reality Check</span></h1>
+      <h1>⚡ <span>Get Your Life Together</span></h1>
       <p>No fluff, no excuses — just honest accountability.</p>
     </div>
     ${weeklyHtml}
@@ -696,7 +750,7 @@ Instructions:
 - Always close with one concrete, specific action they can take RIGHT NOW or first thing tomorrow.
 - Keep it to 3-4 sentences. No bullet points. No fluff.`;
 
-  await callClaude(prompt, 'rcResponse', 'Reality check');
+  await callClaude(prompt, 'rcResponse', 'Get real');
 
   if(!isPro) {
     const resp = document.getElementById('rcResponse');
@@ -705,7 +759,7 @@ Instructions:
     }
   }
 }
-// ── End Reality Check ───────────────────────────────────────────
+// ── End Get Your Life Together ──────────────────────────────────
 
 checkSubscription();
 

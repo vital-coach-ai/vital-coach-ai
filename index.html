@@ -331,8 +331,13 @@ input[type=number],select{width:100%;font-size:14px;font-family:inherit;border-r
     <div id="macroRings"></div>
     <div class="card">
       <div class="section">
-        <label>Meal name</label>
-        <input type="text" id="foodMeal" placeholder="e.g. Breakfast, Lunch, Snack…">
+        <label>Meal</label>
+        <div class="pill-row">
+          <button class="pill" data-group="foodMeal" onclick="selectPill(this,'foodMeal')">Breakfast</button>
+          <button class="pill" data-group="foodMeal" onclick="selectPill(this,'foodMeal')">Lunch</button>
+          <button class="pill" data-group="foodMeal" onclick="selectPill(this,'foodMeal')">Dinner</button>
+          <button class="pill" data-group="foodMeal" onclick="selectPill(this,'foodMeal')">Snack</button>
+        </div>
       </div>
       <div class="section" style="margin-bottom:0;">
         <label>What did you eat?</label>
@@ -915,13 +920,14 @@ function renderSavedMeals(){
 async function quickLogMeal(idx){
   const meals=getSavedMeals();
   if(!meals[idx])return;
-  document.getElementById('foodMeal').value=meals[idx].meal||'';
+  const savedMealName=meals[idx].meal||'';
+  document.querySelectorAll('.pill[data-group="foodMeal"]').forEach(b=>b.classList.toggle('selected',b.textContent.trim()===savedMealName));
   document.getElementById('foodDesc').value=meals[idx].desc||'';
   await logFood();
 }
 
 async function logFood(){
-  const meal=document.getElementById('foodMeal').value.trim();
+  const meal=document.querySelector('.pill[data-group="foodMeal"].selected')?.textContent.trim()||'';
   const desc=document.getElementById('foodDesc').value.trim();
   if(!desc){alert('Please describe what you ate.');return;}
   _lastMealForSave={meal:meal||'Meal',desc};
@@ -947,7 +953,6 @@ async function logFood(){
     responseDiv.innerHTML='<div class="response-card"><p style="color:#c01f1f">Something went wrong. Please try again.</p></div>';
   }
 
-  document.getElementById('foodMeal').value='';
   document.getElementById('foodDesc').value='';
   renderMacroRings();
   renderFoodTimeline();

@@ -256,13 +256,12 @@ input[type=number],select{width:100%;font-size:14px;font-family:inherit;border-r
       </div>
     </div>
     <div class="section">
-      <label>Workout preference</label>
+      <label>Workout preference <span style="font-weight:400;color:#999;">(select all that apply)</span></label>
       <div class="pill-row">
-        <button class="pill" data-group="workout" onclick="selectPill(this,'workout')">Home / no equipment</button>
-        <button class="pill" data-group="workout" onclick="selectPill(this,'workout')">Gym</button>
-        <button class="pill" data-group="workout" onclick="selectPill(this,'workout')">Outdoor / running</button>
-        <button class="pill" data-group="workout" onclick="selectPill(this,'workout')">Mixed</button>
-        <button class="pill" data-group="workout" onclick="selectPill(this,'workout')">Low-impact only</button>
+        <button class="pill workout-multi" onclick="togglePill(this)">Home / no equipment</button>
+        <button class="pill workout-multi" onclick="togglePill(this)">Gym</button>
+        <button class="pill workout-multi" onclick="togglePill(this)">Outdoor / running</button>
+        <button class="pill workout-multi" onclick="togglePill(this)">Low-impact only</button>
       </div>
     </div>
     <div class="section">
@@ -328,7 +327,7 @@ input[type=number],select{width:100%;font-size:14px;font-family:inherit;border-r
   </div>
 
 <script>
-let mood='',energy='',workout='',days='',workoutDone='',waterIntake='';
+let mood='',energy='',days='',workoutDone='',waterIntake='';
 function switchTab(id,btn){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
@@ -342,7 +341,6 @@ function selectPill(btn,group){
   document.querySelectorAll('.pill[data-group="'+group+'"]').forEach(b=>b.classList.remove('selected'));
   btn.classList.add('selected');
   if(group==='energy')energy=btn.textContent.trim();
-  if(group==='workout')workout=btn.textContent.trim();
   if(group==='days')days=btn.textContent.trim();
   if(group==='workoutDone')workoutDone=btn.textContent.trim();
   if(group==='water')waterIntake=btn.textContent.trim();
@@ -350,6 +348,7 @@ function selectPill(btn,group){
 function togglePill(btn){btn.classList.toggle('selected');}
 function getSelectedMulti(){return Array.from(document.querySelectorAll('.pill.multi.selected')).map(b=>b.textContent.trim());}
 function getSelectedGoals(){return Array.from(document.querySelectorAll('.pill.goal-multi.selected')).map(b=>b.textContent.trim());}
+function getSelectedWorkouts(){return Array.from(document.querySelectorAll('.pill.workout-multi.selected')).map(b=>b.textContent.trim());}
 function renderMarkdown(md){
   const lines=md.split('\n');
   const out=[];
@@ -416,9 +415,11 @@ async function generatePlan(){
   const extra=document.getElementById('extra').value.trim();
   const diet=getSelectedMulti().filter(s=>['Vegetarian','Vegan','Gluten-free','Dairy-free','Halal','Kosher','Keto / low-carb','High-protein'].includes(s));
   const goalsStr=goals.join(', ');
-  const prompt='You are an expert fitness and nutrition coach at Vital Coach AI. Create a single cohesive personalized plan that addresses ALL of the user\'s goals together:\n\n- Age: '+(age||'?')+', Sex: '+(sex||'?')+'\n- Height: '+(height||'?')+', Weight: '+(weight||'?')+'lbs\n- Activity: '+(activity||'?')+'\n- Goals: '+goalsStr+'\n- Workout preference: '+(workout||'?')+'\n- Days/week: '+(days||'?')+'\n- Diet: '+(diet.length?diet.join(', '):'none')+'\n- Conditions: '+(conditions||'none')+'\n- Notes: '+(extra||'none')+'\n\nProvide one integrated plan:\n1. **Weekly workout routine** with specific exercises, sets/reps — structured to advance all goals simultaneously\n2. **Sample daily diet plan** with meals and portions\n3. **Three key tips** personalized to their combined goals\nEnd with a short motivational note.';
+  const workouts=getSelectedWorkouts();
+  const workoutStr=workouts.length?workouts.join(', '):'not specified';
+  const prompt='You are an expert fitness and nutrition coach at Vital Coach AI. Create a single cohesive personalized plan that addresses ALL of the user\'s goals together:\n\n- Age: '+(age||'?')+', Sex: '+(sex||'?')+'\n- Height: '+(height||'?')+', Weight: '+(weight||'?')+'lbs\n- Activity: '+(activity||'?')+'\n- Goals: '+goalsStr+'\n- Workout preference: '+workoutStr+'\n- Days/week: '+(days||'?')+'\n- Diet: '+(diet.length?diet.join(', '):'none')+'\n- Conditions: '+(conditions||'none')+'\n- Notes: '+(extra||'none')+'\n\nProvide one integrated plan:\n1. **Weekly workout routine** with specific exercises, sets/reps — structured to advance all goals simultaneously, using the specified workout locations/equipment\n2. **Sample daily diet plan** with meals and portions\n3. **Three key tips** personalized to their combined goals\nEnd with a short motivational note.';
   await callClaude(prompt,'planResponse','Your personalized plan');
-  const planData={goal:goalsStr,goals,height,weight,sex,activity,workoutPref:workout,daysPerWeek:days,diet,savedAt:new Date().toISOString()};
+  const planData={goal:goalsStr,goals,height,weight,sex,activity,workoutPref:workoutStr,daysPerWeek:days,diet,savedAt:new Date().toISOString()};
   localStorage.setItem('vca_plan_context',JSON.stringify(planData));
   loadPlanBanner();
 }
@@ -614,6 +615,33 @@ function renderRealityCheck() {
       <div class="plan-hero" style="padding-bottom:0.75rem;">
         <h1>⚡ <span>Get Your Life Together</span></h1>
         <p>No fluff, no excuses — just honest accountability.</p>
+      </div>
+      <div class="stat-cards">
+        <div class="stat-card">
+          <div class="stat-number">#4</div>
+          <div class="stat-text">Physical inactivity is the 4th leading risk factor for global mortality.</div>
+          <div class="stat-source">Source: World Health Organization (WHO)</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">80%</div>
+          <div class="stat-text">of Americans don't get enough exercise to meet basic health guidelines.</div>
+          <div class="stat-source">Source: Centers for Disease Control and Prevention (CDC)</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">2×</div>
+          <div class="stat-text">Physically inactive people are twice as likely to develop heart disease.</div>
+          <div class="stat-source">Source: American Heart Association</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">1 in 10</div>
+          <div class="stat-text">Only 1 in 10 adults eat enough fruits and vegetables daily.</div>
+          <div class="stat-source">Source: Centers for Disease Control and Prevention (CDC)</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">75%</div>
+          <div class="stat-text">of US healthcare spending is linked to chronic diseases caused by poor lifestyle choices.</div>
+          <div class="stat-source">Source: Centers for Disease Control and Prevention (CDC)</div>
+        </div>
       </div>
       <div class="card">
         <div class="rc-onboard-step">

@@ -428,6 +428,7 @@ function switchTab(id,btn){
   incoming.classList.add('active','slide-in');
   incoming.addEventListener('animationend',()=>{incoming.classList.remove('slide-in');incoming.style.transform='none';incoming.style.opacity='1';},{once:true});
   setTimeout(_applyFade,40);
+  setTimeout(animateStatCards,50);
 }
 function selectMood(btn){
   document.querySelectorAll('.mood-btn').forEach(b=>b.classList.remove('selected'));
@@ -1063,6 +1064,15 @@ function _applyFade(){
 document.querySelectorAll('.page.active .card,.page.active .plan-hero').forEach(el=>el.classList.add('fade-in-el','visible'));
 // Watch dynamic content (Reality Check, Food Log renders)
 new MutationObserver(_applyFade).observe(document.body,{childList:true,subtree:true});
+
+function animateStatCards(){
+  const cards=document.querySelectorAll('.stat-card');
+  cards.forEach((card,i)=>{
+    card.classList.add('animate-in');
+    setTimeout(()=>{card.style.opacity='1';card.style.transform='none';card.classList.remove('animate-in');},i*80);
+  });
+}
+animateStatCards();
 
 checkSubscription();
 

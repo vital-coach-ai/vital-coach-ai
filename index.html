@@ -95,6 +95,14 @@ input[type=number],select{width:100%;font-size:14px;font-family:inherit;border-r
 .motivational-quote{background:#1a1a1a;color:#fff;border-radius:10px;padding:1rem 1.25rem;margin-bottom:1.25rem;border-left:4px solid #E82C2C;}
 .motivational-quote .quote-text{font-size:14px;font-style:italic;line-height:1.6;margin-bottom:4px;}
 .motivational-quote .quote-author{font-size:12px;color:#aaa;font-weight:600;}
+.food-log-list{margin-top:1.25rem;}
+.food-log-list h4{font-size:13px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.75rem;}
+.food-log-entry{background:#fff;border:1px solid #e5e5e5;border-radius:10px;padding:0.85rem 1rem;margin-bottom:0.65rem;}
+.food-log-entry .fle-meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;}
+.food-log-entry .fle-meal{font-size:13px;font-weight:700;color:#1a1a1a;}
+.food-log-entry .fle-time{font-size:11px;color:#aaa;}
+.food-log-entry .fle-desc{font-size:12px;color:#777;line-height:1.4;}
+.photo-coming-soon{font-size:11px;color:#bbb;margin-top:6px;display:block;}
 .rc-score-locked{background:#fafafa;border:1px solid #e5e5e5;border-radius:10px;padding:1rem;text-align:center;margin-top:1rem;}
 .rc-score-locked p{font-size:13px;color:#888;margin-bottom:8px;}
 .rc-score{background:#f5fff8;border:1px solid #b6e8c7;border-radius:10px;padding:1rem;text-align:center;margin-top:1rem;}
@@ -120,6 +128,7 @@ input[type=number],select{width:100%;font-size:14px;font-family:inherit;border-r
     <button class="tab active" onclick="switchTab('checkin',this)">&#9825; Daily Check-in</button>
     <button class="tab" onclick="switchTab('plan',this)">&#9998; Build My Plan</button>
     <button class="tab" onclick="switchTab('realitycheck',this);renderRealityCheck()">&#9889; Get Your Life Together</button>
+    <button class="tab" onclick="switchTab('foodlog',this);renderFoodLog()">&#127822; Food Log</button>
   </div>
 
   <div id="checkin" class="page active">
@@ -235,14 +244,15 @@ input[type=number],select{width:100%;font-size:14px;font-family:inherit;border-r
       </div>
     </div>
     <div class="section">
-      <label>Primary health goal</label>
+      <label>Health goals <span style="font-weight:400;color:#999;">(select all that apply)</span></label>
       <div class="pill-row">
-        <button class="pill" data-group="goal" onclick="selectPill(this,'goal')">Lose weight</button>
-        <button class="pill" data-group="goal" onclick="selectPill(this,'goal')">Build muscle</button>
-        <button class="pill" data-group="goal" onclick="selectPill(this,'goal')">Improve endurance</button>
-        <button class="pill" data-group="goal" onclick="selectPill(this,'goal')">General fitness</button>
-        <button class="pill" data-group="goal" onclick="selectPill(this,'goal')">Reduce stress</button>
-        <button class="pill" data-group="goal" onclick="selectPill(this,'goal')">Eat healthier</button>
+        <button class="pill goal-multi" onclick="togglePill(this)">🔥 Lose belly fat &amp; slim down</button>
+        <button class="pill goal-multi" onclick="togglePill(this)">💪 Build muscle &amp; get stronger</button>
+        <button class="pill goal-multi" onclick="togglePill(this)">🥗 Eat healthier &amp; improve nutrition</button>
+        <button class="pill goal-multi" onclick="togglePill(this)">⚡ Boost energy &amp; feel better daily</button>
+        <button class="pill goal-multi" onclick="togglePill(this)">🏃 Improve cardio &amp; endurance</button>
+        <button class="pill goal-multi" onclick="togglePill(this)">😴 Better sleep &amp; stress management</button>
+        <button class="pill goal-multi" onclick="togglePill(this)">⚖️ Maintain weight &amp; stay consistent</button>
       </div>
     </div>
     <div class="section">
@@ -296,8 +306,29 @@ input[type=number],select{width:100%;font-size:14px;font-family:inherit;border-r
     <div id="rcContent"></div>
   </div>
 
+  <div id="foodlog" class="page">
+    <div class="plan-hero">
+      <h1>&#127822; <span>Food Log</span></h1>
+      <p>Log a meal and get instant calories, macros &amp; nutrition insights.</p>
+    </div>
+    <div class="card">
+      <div class="section">
+        <label>Meal name</label>
+        <input type="text" id="foodMeal" placeholder="e.g. Breakfast, Lunch, Snack…">
+      </div>
+      <div class="section" style="margin-bottom:0;">
+        <label>What did you eat?</label>
+        <textarea id="foodDesc" placeholder="e.g. Grilled chicken breast, 1 cup brown rice, steamed broccoli, drizzle of olive oil…" style="min-height:90px;"></textarea>
+        <span class="photo-coming-soon">📷 Photo scanning coming soon</span>
+      </div>
+      <button class="ask-btn" style="margin-top:1.25rem;" onclick="logFood()">&#10024; Analyze This Meal</button>
+    </div>
+    <div id="foodResponse"></div>
+    <div id="foodLogList" class="food-log-list"></div>
+  </div>
+
 <script>
-let mood='',energy='',goal='',workout='',days='',workoutDone='',waterIntake='';
+let mood='',energy='',workout='',days='',workoutDone='',waterIntake='';
 function switchTab(id,btn){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
@@ -311,7 +342,6 @@ function selectPill(btn,group){
   document.querySelectorAll('.pill[data-group="'+group+'"]').forEach(b=>b.classList.remove('selected'));
   btn.classList.add('selected');
   if(group==='energy')energy=btn.textContent.trim();
-  if(group==='goal')goal=btn.textContent.trim();
   if(group==='workout')workout=btn.textContent.trim();
   if(group==='days')days=btn.textContent.trim();
   if(group==='workoutDone')workoutDone=btn.textContent.trim();
@@ -319,6 +349,7 @@ function selectPill(btn,group){
 }
 function togglePill(btn){btn.classList.toggle('selected');}
 function getSelectedMulti(){return Array.from(document.querySelectorAll('.pill.multi.selected')).map(b=>b.textContent.trim());}
+function getSelectedGoals(){return Array.from(document.querySelectorAll('.pill.goal-multi.selected')).map(b=>b.textContent.trim());}
 function renderMarkdown(md){
   const lines=md.split('\n');
   const out=[];
@@ -372,7 +403,8 @@ async function getCheckinAdvice(){
   }
 }
 async function generatePlan(){
-  if(!goal){alert('Please select a health goal.');return;}
+  const goals=getSelectedGoals();
+  if(!goals.length){alert('Please select at least one health goal.');return;}
   const age=document.getElementById('age').value;
   const heightFt=document.getElementById('heightFt').value;
   const heightIn=document.getElementById('heightIn').value;
@@ -383,10 +415,10 @@ async function generatePlan(){
   const conditions=document.getElementById('conditions').value.trim();
   const extra=document.getElementById('extra').value.trim();
   const diet=getSelectedMulti().filter(s=>['Vegetarian','Vegan','Gluten-free','Dairy-free','Halal','Kosher','Keto / low-carb','High-protein'].includes(s));
-  const prompt='You are an expert fitness and nutrition coach at Vital Coach AI. Create a personalized plan:\n\n- Age: '+(age||'?')+', Sex: '+(sex||'?')+'\n- Height: '+(height||'?')+', Weight: '+(weight||'?')+'lbs\n- Activity: '+(activity||'?')+'\n- Goal: '+goal+'\n- Workout: '+(workout||'?')+'\n- Days/week: '+(days||'?')+'\n- Diet: '+(diet.length?diet.join(', '):'none')+'\n- Conditions: '+(conditions||'none')+'\n- Notes: '+(extra||'none')+'\n\nProvide:\n1. **Weekly workout routine** with specific exercises, sets/reps\n2. **Sample daily diet plan** with meals and portions\n3. **Three key tips** personalized to their profile\nEnd with a short motivational note.';
+  const goalsStr=goals.join(', ');
+  const prompt='You are an expert fitness and nutrition coach at Vital Coach AI. Create a single cohesive personalized plan that addresses ALL of the user\'s goals together:\n\n- Age: '+(age||'?')+', Sex: '+(sex||'?')+'\n- Height: '+(height||'?')+', Weight: '+(weight||'?')+'lbs\n- Activity: '+(activity||'?')+'\n- Goals: '+goalsStr+'\n- Workout preference: '+(workout||'?')+'\n- Days/week: '+(days||'?')+'\n- Diet: '+(diet.length?diet.join(', '):'none')+'\n- Conditions: '+(conditions||'none')+'\n- Notes: '+(extra||'none')+'\n\nProvide one integrated plan:\n1. **Weekly workout routine** with specific exercises, sets/reps — structured to advance all goals simultaneously\n2. **Sample daily diet plan** with meals and portions\n3. **Three key tips** personalized to their combined goals\nEnd with a short motivational note.';
   await callClaude(prompt,'planResponse','Your personalized plan');
-  // Save plan context to localStorage for check-in use
-  const planData={goal,height,weight,sex,activity,workoutPref:workout,daysPerWeek:days,diet,savedAt:new Date().toISOString()};
+  const planData={goal:goalsStr,goals,height,weight,sex,activity,workoutPref:workout,daysPerWeek:days,diet,savedAt:new Date().toISOString()};
   localStorage.setItem('vca_plan_context',JSON.stringify(planData));
   loadPlanBanner();
 }
@@ -760,6 +792,39 @@ Instructions:
   }
 }
 // ── End Get Your Life Together ──────────────────────────────────
+
+// ── Food Log ────────────────────────────────────────────────────
+function getFoodLogToday(){
+  const key='vca_food_log_'+new Date().toISOString().slice(0,10);
+  return JSON.parse(localStorage.getItem(key)||'[]');
+}
+function saveFoodLogEntry(meal,desc){
+  const key='vca_food_log_'+new Date().toISOString().slice(0,10);
+  const entries=getFoodLogToday();
+  entries.push({meal,desc,time:new Date().toLocaleTimeString([],{hour:'numeric',minute:'2-digit'})});
+  localStorage.setItem(key,JSON.stringify(entries));
+}
+function renderFoodLog(){
+  const list=document.getElementById('foodLogList');
+  if(!list)return;
+  const entries=getFoodLogToday();
+  if(!entries.length){list.innerHTML='';return;}
+  list.innerHTML='<h4>Today\'s log</h4>'+entries.map(e=>`<div class="food-log-entry"><div class="fle-meta"><span class="fle-meal">${e.meal||'Meal'}</span><span class="fle-time">${e.time}</span></div><div class="fle-desc">${e.desc}</div></div>`).join('');
+}
+async function logFood(){
+  const meal=document.getElementById('foodMeal').value.trim();
+  const desc=document.getElementById('foodDesc').value.trim();
+  if(!desc){alert('Please describe what you ate.');return;}
+  saveFoodLogEntry(meal||'Meal',desc);
+  const savedPlan=JSON.parse(localStorage.getItem('vca_plan_context')||'null');
+  const planCtx=savedPlan?'\n\nUser\'s active plan goals: '+savedPlan.goal:'';
+  const prompt='You are a nutrition analyst. The user logged this meal:\n- Meal: '+(meal||'unspecified')+'\n- Description: '+desc+planCtx+'\n\nRespond with EXACTLY this structure (use the bold headers):\n**Estimated calories:** [number] kcal\n**Macros:** Protein: Xg | Carbs: Xg | Fat: Xg\n**Nutritional quality:** [1-2 sentence honest assessment of this meal\'s quality]\n'+(savedPlan?'**Plan fit:** [1 sentence on how this fits or doesn\'t fit their goals]\n':'')+'\nUse realistic estimates based on typical portions if not specified. Be direct and factual.';
+  await callClaude(prompt,'foodResponse','Nutrition breakdown');
+  document.getElementById('foodMeal').value='';
+  document.getElementById('foodDesc').value='';
+  renderFoodLog();
+}
+// ── End Food Log ─────────────────────────────────────────────────
 
 checkSubscription();
 

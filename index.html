@@ -367,6 +367,17 @@ select option{background:#2a2a2a;color:#ffffff;}
   </div>
 
   <div id="realitycheck" class="page">
+    <div class="plan-hero" style="padding-bottom:0.75rem;">
+      <h1>&#9889; <span>Get Your Life Together</span></h1>
+      <p>You know something needs to change. Stop guessing and find out what's actually in your way.</p>
+    </div>
+    <div class="stat-cards-grid">
+      <div class="stat-card"><div class="stat-number">#4</div><div class="stat-description">Physical inactivity is the 4th leading risk factor for global mortality.</div><div class="stat-source">Source: World Health Organization</div></div>
+      <div class="stat-card"><div class="stat-number">80%</div><div class="stat-description">of Americans don't get enough exercise to meet basic health guidelines.</div><div class="stat-source">Source: CDC</div></div>
+      <div class="stat-card"><div class="stat-number">2x</div><div class="stat-description">Physically inactive people are twice as likely to develop heart disease.</div><div class="stat-source">Source: American Heart Association</div></div>
+      <div class="stat-card"><div class="stat-number">1 in 10</div><div class="stat-description">Only 1 in 10 adults eat enough fruits and vegetables daily.</div><div class="stat-source">Source: CDC</div></div>
+      <div class="stat-card"><div class="stat-number">75%</div><div class="stat-description">75% of US healthcare spending is linked to chronic diseases caused by poor lifestyle choices.</div><div class="stat-source">Source: CDC</div></div>
+    </div>
     <div id="rcContent"></div>
   </div>
 
@@ -689,17 +700,6 @@ function renderRealityCheck() {
   const profileRaw = localStorage.getItem('vca_reality_check_profile');
   if(!profileRaw) {
     container.innerHTML = `
-      <div class="plan-hero" style="padding-bottom:0.75rem;">
-        <h1>⚡ <span>Get Your Life Together</span></h1>
-        <p>You know something needs to change. Stop guessing and find out what's actually in your way.</p>
-      </div>
-      <div class="stat-cards-grid">
-        <div class="stat-card"><div class="stat-number">#4</div><div class="stat-description">Physical inactivity is the 4th leading risk factor for global mortality.</div><div class="stat-source">Source: World Health Organization</div></div>
-        <div class="stat-card"><div class="stat-number">80%</div><div class="stat-description">of Americans don't get enough exercise to meet basic health guidelines.</div><div class="stat-source">Source: CDC</div></div>
-        <div class="stat-card"><div class="stat-number">2×</div><div class="stat-description">Physically inactive people are twice as likely to develop heart disease.</div><div class="stat-source">Source: American Heart Association</div></div>
-        <div class="stat-card"><div class="stat-number">1 in 10</div><div class="stat-description">Only 1 in 10 adults eat enough fruits and vegetables daily.</div><div class="stat-source">Source: CDC</div></div>
-        <div class="stat-card"><div class="stat-number">75%</div><div class="stat-description">of US healthcare spending is linked to chronic diseases caused by poor lifestyle choices.</div><div class="stat-source">Source: CDC</div></div>
-      </div>
       <div class="card">
         <div class="rc-onboard-step">
           <label>What's your goal?</label>
@@ -739,17 +739,6 @@ function renderRealityCheck() {
   // Already used today (free users)
   if(!isPro && rcUsedToday()) {
     container.innerHTML = `
-      <div class="plan-hero" style="padding-bottom:0.75rem;">
-        <h1>⚡ <span>Get Your Life Together</span></h1>
-        <p>You know something needs to change. Stop guessing and find out what's actually in your way.</p>
-      </div>
-      <div class="stat-cards-grid">
-        <div class="stat-card"><div class="stat-number">#4</div><div class="stat-description">Physical inactivity is the 4th leading risk factor for global mortality.</div><div class="stat-source">Source: World Health Organization</div></div>
-        <div class="stat-card"><div class="stat-number">80%</div><div class="stat-description">of Americans don't get enough exercise to meet basic health guidelines.</div><div class="stat-source">Source: CDC</div></div>
-        <div class="stat-card"><div class="stat-number">2×</div><div class="stat-description">Physically inactive people are twice as likely to develop heart disease.</div><div class="stat-source">Source: American Heart Association</div></div>
-        <div class="stat-card"><div class="stat-number">1 in 10</div><div class="stat-description">Only 1 in 10 adults eat enough fruits and vegetables daily.</div><div class="stat-source">Source: CDC</div></div>
-        <div class="stat-card"><div class="stat-number">75%</div><div class="stat-description">of US healthcare spending is linked to chronic diseases caused by poor lifestyle choices.</div><div class="stat-source">Source: CDC</div></div>
-      </div>
       <div class="card">
         <div class="rc-locked">
           <h3>You've used your free check-in for today.</h3>
@@ -773,10 +762,6 @@ function renderRealityCheck() {
   }
 
   container.innerHTML = `
-    <div class="plan-hero" style="padding-bottom:0.75rem;">
-      <h1>⚡ <span>Get Your Life Together</span></h1>
-      <p>You know something needs to change. Stop guessing and find out what's actually in your way.</p>
-    </div>
     ${weeklyHtml}
     <div class="card" style="margin-top:${weeklyHtml?'1rem':'0'};">
       <div class="rc-onboard-step">

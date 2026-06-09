@@ -64,12 +64,30 @@ input[type=number]:focus,input[type=text]:focus,select:focus{border-color:#E82C2
 .loading-dots span:nth-child(2){animation-delay:0.2s;}
 .loading-dots span:nth-child(3){animation-delay:0.4s;}
 @keyframes bounce{0%,80%,100%{opacity:0.3;transform:scale(0.8)}40%{opacity:1;transform:scale(1)}}
-@keyframes pageIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+@keyframes heroFadeUp{from{opacity:0;transform:translateY(22px);}to{opacity:1;transform:translateY(0);}}
+@keyframes shimmer{0%{left:-70%;}100%{left:130%;}}
+@keyframes pulseRing{0%{transform:scale(1);opacity:0.6;}100%{transform:scale(2.2);opacity:0;}}
+@keyframes pageSlideIn{from{opacity:0;transform:translateX(28px);}to{opacity:1;transform:translateX(0);}}
+@keyframes pageSlideOut{from{opacity:1;transform:translateX(0);}to{opacity:0;transform:translateX(-28px);}}
+@keyframes ringSpinUp{from{stroke-dashoffset:var(--ring-circ);}to{stroke-dashoffset:var(--ring-target);}}
 .divider{border:none;border-top:1px solid #ebebeb;margin:1.25rem 0;}
 .tag{display:inline-block;font-size:11px;padding:3px 10px;border-radius:999px;background:#fff0f0;color:#c01f1f;font-weight:700;margin-bottom:12px;letter-spacing:0.03em;}
 .disclaimer{font-size:11px;color:#aaa;margin-top:8px;line-height:1.5;}
+/* Hero entrance */
+.logo-header{animation:heroFadeUp 0.55s cubic-bezier(0.22,1,0.36,1) both;}
+.trust-bar{animation:heroFadeUp 0.55s cubic-bezier(0.22,1,0.36,1) 0.15s both;}
+.tab-row{animation:heroFadeUp 0.55s cubic-bezier(0.22,1,0.36,1) 0.3s both;}
+/* Page transitions */
 .page{display:none;}
-.page.active{display:block;animation:pageIn 0.3s ease;}
+.page.active{display:block;}
+.page.slide-in{animation:pageSlideIn 0.35s cubic-bezier(0.22,1,0.36,1) both;}
+.page.slide-out{display:block !important;animation:pageSlideOut 0.25s cubic-bezier(0.4,0,1,1) both;pointer-events:none;}
+/* Button shimmer */
+.ask-btn,.upgrade-btn{position:relative;overflow:hidden;}
+.ask-btn::after,.upgrade-btn::after{content:'';position:absolute;top:0;left:-70%;width:45%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.28),transparent);transform:skewX(-15deg);transition:none;pointer-events:none;}
+.ask-btn:hover::after,.upgrade-btn:hover::after{animation:shimmer 0.65s ease;}
+/* Pulse ring on click */
+.btn-pulse{position:absolute;border-radius:inherit;inset:0;border:2px solid rgba(232,44,44,0.5);animation:pulseRing 0.5s ease-out forwards;pointer-events:none;}
 .card{background:#fff;border-radius:16px;border:none;box-shadow:0 2px 12px rgba(0,0,0,0.07);padding:1.1rem 1.25rem;margin-bottom:1rem;transition:box-shadow 0.22s ease,transform 0.22s ease;}
 .plan-hero{text-align:center;padding:2rem 0.75rem 1.5rem;margin-bottom:1.25rem;background:linear-gradient(155deg,#f3f3f6 0%,#ffffff 65%);border-radius:18px;box-shadow:0 2px 12px rgba(0,0,0,0.06);}
 .plan-hero h1{font-size:26px;font-weight:800;color:#1a1a1a;line-height:1.25;margin:0 0 10px;letter-spacing:-0.4px;}
@@ -112,7 +130,7 @@ input[type=number]:focus,input[type=text]:focus,select:focus{border-color:#E82C2
 .macro-ring-val{font-size:13px;font-weight:800;color:#1a1a1a;}
 .macro-ring-unit{font-size:9px;color:#999;}
 .macro-ring-label{font-size:11px;font-weight:600;color:#666;}
-.ring-arc{transition:stroke-dashoffset 0.85s cubic-bezier(0.4,0,0.2,1);}
+.ring-arc{transition:stroke-dashoffset 1.2s cubic-bezier(0.0,0,0.2,1);}
 .food-timeline{margin-top:1.25rem;}
 .food-timeline h4{font-size:12px;font-weight:700;color:#aaa;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:0.6rem;}
 .flt-entry{display:flex;align-items:flex-start;gap:0.65rem;padding:0.55rem 0;border-bottom:1px solid #f0f0f0;}
@@ -365,9 +383,18 @@ input[type=number]:focus,input[type=text]:focus,select:focus{border-color:#E82C2
 <script>
 let mood='',energy='',days='',workoutDone='',waterIntake='';
 function switchTab(id,btn){
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  const outgoing=document.querySelector('.page.active');
+  if(outgoing&&outgoing.id!==id){
+    outgoing.classList.add('slide-out');
+    outgoing.addEventListener('animationend',()=>{outgoing.classList.remove('active','slide-out');},{once:true});
+  } else if(outgoing){
+    outgoing.classList.remove('active');
+  }
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  document.getElementById(id).classList.add('active');btn.classList.add('active');
+  btn.classList.add('active');
+  const incoming=document.getElementById(id);
+  incoming.classList.add('active','slide-in');
+  incoming.addEventListener('animationend',()=>incoming.classList.remove('slide-in'),{once:true});
   setTimeout(_applyFade,40);
 }
 function selectMood(btn){
@@ -974,6 +1001,16 @@ async function logFood(){
 
 function renderFoodLog(){renderMacroRings();renderFoodTimeline();renderSavedMeals();}
 // ── End Food Log ─────────────────────────────────────────────────
+
+// ── Button pulse ring ───────────────────────────────────────────
+document.addEventListener('click',e=>{
+  const btn=e.target.closest('.ask-btn,.upgrade-btn');
+  if(!btn)return;
+  const ring=document.createElement('span');
+  ring.className='btn-pulse';
+  btn.appendChild(ring);
+  ring.addEventListener('animationend',()=>ring.remove(),{once:true});
+});
 
 // ── Scroll fade-ins ─────────────────────────────────────────────
 const _fadeIO=new IntersectionObserver(es=>es.forEach(e=>{

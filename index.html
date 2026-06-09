@@ -75,8 +75,6 @@ select option{background:#2a2a2a;color:#ffffff;}
 @keyframes heroFadeUp{from{opacity:0;}to{opacity:1;}}
 @keyframes shimmer{0%{left:-70%;}100%{left:130%;}}
 @keyframes pulseRing{0%{transform:scale(1);opacity:0.6;}100%{transform:scale(2.2);opacity:0;}}
-@keyframes pageFadeIn{from{opacity:0;}to{opacity:1;}}
-@keyframes pageFadeOut{from{opacity:1;}to{opacity:0;}}
 @keyframes ringSpinUp{from{stroke-dashoffset:var(--ring-circ);}to{stroke-dashoffset:var(--ring-target);}}
 @keyframes statCascade{0%{opacity:0;}100%{opacity:1;}}
 .divider{border:none;height:1px;background:linear-gradient(to right,transparent,#3a1818 20%,#3a1818 80%,transparent);margin:1.25rem 0;}
@@ -89,8 +87,6 @@ select option{background:#2a2a2a;color:#ffffff;}
 /* Page transitions */
 .page{display:none;}
 .page.active{display:block;opacity:1;transform:none;position:relative;top:0;}
-.page.slide-in{animation:pageFadeIn 0.3s ease both;}
-.page.slide-out{display:block !important;position:absolute;top:0;left:0;right:0;animation:pageFadeOut 0.2s ease both;pointer-events:none;}
 /* Button shimmer */
 .ask-btn,.upgrade-btn{position:relative;overflow:hidden;}
 .ask-btn::after,.upgrade-btn::after{content:'';position:absolute;top:0;left:-70%;width:45%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.4),transparent);transform:skewX(-15deg);transition:none;pointer-events:none;}
@@ -126,7 +122,6 @@ select option{background:#2a2a2a;color:#ffffff;}
 .stat-cards{display:flex;flex-direction:column;gap:0.35rem;margin-bottom:1rem;}
 .stat-cards-grid{display:flex;flex-direction:column;gap:12px;width:100%;margin:24px 0;}
 .stat-card{background:#1e1e1e;border:1px solid #333;border-radius:12px;padding:20px;text-align:center;opacity:1;transform:none;transition:opacity 0.3s ease,transform 0.3s ease;}
-.stat-card.animate-in{opacity:0;transform:translateY(10px);}
 .stat-number{color:#e53e3e;font-family:'Clash Display',sans-serif;font-size:2rem;font-weight:700;margin-bottom:8px;}
 .stat-description{color:#ffffff;font-family:'Inter',sans-serif;font-size:0.95rem;font-weight:700;margin-bottom:6px;line-height:1.4;}
 .stat-source{color:#888;font-family:'Inter',sans-serif;font-size:0.75rem;}
@@ -196,13 +191,6 @@ select option{background:#2a2a2a;color:#ffffff;}
     <div class="plan-hero">
       <h1>&#9825; <span>Daily Check-in</span></h1>
       <p>Tell it what you're working on. It asks if you did it. When you didn't — it wants to know why.</p>
-    </div>
-    <div class="stat-cards-grid">
-      <div class="stat-card"><div class="stat-number">#4</div><div class="stat-description">Physical inactivity is the 4th leading risk factor for global mortality.</div><div class="stat-source">Source: World Health Organization</div></div>
-      <div class="stat-card"><div class="stat-number">80%</div><div class="stat-description">of Americans don't get enough exercise to meet basic health guidelines.</div><div class="stat-source">Source: CDC</div></div>
-      <div class="stat-card"><div class="stat-number">2x</div><div class="stat-description">Physically inactive people are twice as likely to develop heart disease.</div><div class="stat-source">Source: American Heart Association</div></div>
-      <div class="stat-card"><div class="stat-number">1 in 10</div><div class="stat-description">Only 1 in 10 adults eat enough fruits and vegetables daily.</div><div class="stat-source">Source: CDC</div></div>
-      <div class="stat-card"><div class="stat-number">75%</div><div class="stat-description">of US healthcare spending is linked to chronic diseases caused by poor lifestyle choices.</div><div class="stat-source">Source: CDC</div></div>
     </div>
     <div id="planBanner" style="display:none;" class="plan-banner">&#9989; <span id="planBannerText"></span></div>
     <div class="section">
@@ -416,19 +404,11 @@ select option{background:#2a2a2a;color:#ffffff;}
 let mood='',energy='',days='',workoutDone='',waterIntake='';
 function switchTab(id,btn){
   const outgoing=document.querySelector('.page.active');
-  if(outgoing&&outgoing.id!==id){
-    outgoing.classList.add('slide-out');
-    outgoing.addEventListener('animationend',()=>{outgoing.classList.remove('active','slide-out');},{once:true});
-  } else if(outgoing){
-    outgoing.classList.remove('active');
-  }
+  if(outgoing) outgoing.classList.remove('active');
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   btn.classList.add('active');
-  const incoming=document.getElementById(id);
-  incoming.classList.add('active','slide-in');
-  incoming.addEventListener('animationend',()=>{incoming.classList.remove('slide-in');incoming.style.transform='none';incoming.style.opacity='1';},{once:true});
+  document.getElementById(id).classList.add('active');
   setTimeout(_applyFade,40);
-  setTimeout(animateStatCards,50);
 }
 function selectMood(btn){
   document.querySelectorAll('.mood-btn').forEach(b=>b.classList.remove('selected'));
@@ -713,32 +693,12 @@ function renderRealityCheck() {
         <h1>⚡ <span>Get Your Life Together</span></h1>
         <p>You know something needs to change. Stop guessing and find out what's actually in your way.</p>
       </div>
-      <div class="stat-cards">
-        <div class="stat-card">
-          <div class="stat-number">#4</div>
-          <div class="stat-text">Physical inactivity is the 4th leading risk factor for global mortality.</div>
-          <div class="stat-source">Source: World Health Organization (WHO)</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-number">80%</div>
-          <div class="stat-text">of Americans don't get enough exercise to meet basic health guidelines.</div>
-          <div class="stat-source">Source: Centers for Disease Control and Prevention (CDC)</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-number">2×</div>
-          <div class="stat-text">Physically inactive people are twice as likely to develop heart disease.</div>
-          <div class="stat-source">Source: American Heart Association</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-number">1 in 10</div>
-          <div class="stat-text">Only 1 in 10 adults eat enough fruits and vegetables daily.</div>
-          <div class="stat-source">Source: Centers for Disease Control and Prevention (CDC)</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-number">75%</div>
-          <div class="stat-text">of US healthcare spending is linked to chronic diseases caused by poor lifestyle choices.</div>
-          <div class="stat-source">Source: Centers for Disease Control and Prevention (CDC)</div>
-        </div>
+      <div class="stat-cards-grid">
+        <div class="stat-card"><div class="stat-number">#4</div><div class="stat-description">Physical inactivity is the 4th leading risk factor for global mortality.</div><div class="stat-source">Source: World Health Organization</div></div>
+        <div class="stat-card"><div class="stat-number">80%</div><div class="stat-description">of Americans don't get enough exercise to meet basic health guidelines.</div><div class="stat-source">Source: CDC</div></div>
+        <div class="stat-card"><div class="stat-number">2×</div><div class="stat-description">Physically inactive people are twice as likely to develop heart disease.</div><div class="stat-source">Source: American Heart Association</div></div>
+        <div class="stat-card"><div class="stat-number">1 in 10</div><div class="stat-description">Only 1 in 10 adults eat enough fruits and vegetables daily.</div><div class="stat-source">Source: CDC</div></div>
+        <div class="stat-card"><div class="stat-number">75%</div><div class="stat-description">of US healthcare spending is linked to chronic diseases caused by poor lifestyle choices.</div><div class="stat-source">Source: CDC</div></div>
       </div>
       <div class="card">
         <div class="rc-onboard-step">
@@ -783,32 +743,12 @@ function renderRealityCheck() {
         <h1>⚡ <span>Get Your Life Together</span></h1>
         <p>You know something needs to change. Stop guessing and find out what's actually in your way.</p>
       </div>
-      <div class="stat-cards">
-        <div class="stat-card">
-          <div class="stat-number">#4</div>
-          <div class="stat-text">Physical inactivity is the 4th leading risk factor for global mortality.</div>
-          <div class="stat-source">Source: World Health Organization (WHO)</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-number">80%</div>
-          <div class="stat-text">of Americans don't get enough exercise to meet basic health guidelines.</div>
-          <div class="stat-source">Source: Centers for Disease Control and Prevention (CDC)</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-number">2×</div>
-          <div class="stat-text">Physically inactive people are twice as likely to develop heart disease.</div>
-          <div class="stat-source">Source: American Heart Association</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-number">1 in 10</div>
-          <div class="stat-text">Only 1 in 10 adults eat enough fruits and vegetables daily.</div>
-          <div class="stat-source">Source: Centers for Disease Control and Prevention (CDC)</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-number">75%</div>
-          <div class="stat-text">of US healthcare spending is linked to chronic diseases caused by poor lifestyle choices.</div>
-          <div class="stat-source">Source: Centers for Disease Control and Prevention (CDC)</div>
-        </div>
+      <div class="stat-cards-grid">
+        <div class="stat-card"><div class="stat-number">#4</div><div class="stat-description">Physical inactivity is the 4th leading risk factor for global mortality.</div><div class="stat-source">Source: World Health Organization</div></div>
+        <div class="stat-card"><div class="stat-number">80%</div><div class="stat-description">of Americans don't get enough exercise to meet basic health guidelines.</div><div class="stat-source">Source: CDC</div></div>
+        <div class="stat-card"><div class="stat-number">2×</div><div class="stat-description">Physically inactive people are twice as likely to develop heart disease.</div><div class="stat-source">Source: American Heart Association</div></div>
+        <div class="stat-card"><div class="stat-number">1 in 10</div><div class="stat-description">Only 1 in 10 adults eat enough fruits and vegetables daily.</div><div class="stat-source">Source: CDC</div></div>
+        <div class="stat-card"><div class="stat-number">75%</div><div class="stat-description">of US healthcare spending is linked to chronic diseases caused by poor lifestyle choices.</div><div class="stat-source">Source: CDC</div></div>
       </div>
       <div class="card">
         <div class="rc-locked">
@@ -1065,14 +1005,6 @@ document.querySelectorAll('.page.active .card,.page.active .plan-hero').forEach(
 // Watch dynamic content (Reality Check, Food Log renders)
 new MutationObserver(_applyFade).observe(document.body,{childList:true,subtree:true});
 
-function animateStatCards(){
-  const cards=document.querySelectorAll('.stat-card');
-  cards.forEach((card,i)=>{
-    card.classList.add('animate-in');
-    setTimeout(()=>{card.style.opacity='1';card.style.transform='none';card.classList.remove('animate-in');},i*80);
-  });
-}
-animateStatCards();
 
 checkSubscription();
 

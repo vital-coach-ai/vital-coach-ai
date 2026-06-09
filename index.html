@@ -18,7 +18,7 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:linear-gradient(to bottom,#0d0d0d 0%,#150808 100%);background-attachment:fixed;color:#e8e8e8;min-height:100vh;}
-#app{max-width:620px;margin:0 auto;padding:1.25rem 1rem 2rem;background:linear-gradient(to bottom,#161616 0%,#1c1010 100%);min-height:100vh;}
+#app{max-width:620px;margin:0 auto;padding:1.25rem 1rem 2rem;background:linear-gradient(to bottom,#161616 0%,#1c1010 100%);min-height:100vh;position:relative;}
 ::-webkit-scrollbar{width:8px;}
 ::-webkit-scrollbar-track{background:#0d0d0d;}
 ::-webkit-scrollbar-thumb{background:#333333;border-radius:4px;}
@@ -90,7 +90,7 @@ select option{background:#2a2a2a;color:#ffffff;}
 .page{display:none;}
 .page.active{display:block;opacity:1;transform:none;position:relative;top:0;}
 .page.slide-in{animation:pageFadeIn 0.3s ease both;}
-.page.slide-out{display:block !important;animation:pageFadeOut 0.2s ease both;pointer-events:none;}
+.page.slide-out{display:block !important;position:absolute;top:0;left:0;right:0;animation:pageFadeOut 0.2s ease both;pointer-events:none;}
 /* Button shimmer */
 .ask-btn,.upgrade-btn{position:relative;overflow:hidden;}
 .ask-btn::after,.upgrade-btn::after{content:'';position:absolute;top:0;left:-70%;width:45%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.4),transparent);transform:skewX(-15deg);transition:none;pointer-events:none;}

@@ -95,14 +95,32 @@ input[type=number],select{width:100%;font-size:14px;font-family:inherit;border-r
 .motivational-quote{background:#1a1a1a;color:#fff;border-radius:10px;padding:1rem 1.25rem;margin-bottom:1.25rem;border-left:4px solid #E82C2C;}
 .motivational-quote .quote-text{font-size:14px;font-style:italic;line-height:1.6;margin-bottom:4px;}
 .motivational-quote .quote-author{font-size:12px;color:#aaa;font-weight:600;}
-.food-log-list{margin-top:1.25rem;}
-.food-log-list h4{font-size:13px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.75rem;}
-.food-log-entry{background:#fff;border:1px solid #e5e5e5;border-radius:10px;padding:0.85rem 1rem;margin-bottom:0.65rem;}
-.food-log-entry .fle-meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;}
-.food-log-entry .fle-meal{font-size:13px;font-weight:700;color:#1a1a1a;}
-.food-log-entry .fle-time{font-size:11px;color:#aaa;}
-.food-log-entry .fle-desc{font-size:12px;color:#777;line-height:1.4;}
 .photo-coming-soon{font-size:11px;color:#bbb;margin-top:6px;display:block;}
+.macro-rings{display:flex;justify-content:space-around;padding:0.85rem 0.5rem 0.6rem;background:#fff;border-radius:12px;border:1px solid #e5e5e5;margin-bottom:1.25rem;}
+.macro-ring-wrap{display:flex;flex-direction:column;align-items:center;gap:3px;}
+.macro-ring-svg-wrap{position:relative;width:68px;height:68px;}
+.macro-ring-svg-wrap svg{position:absolute;top:0;left:0;}
+.macro-ring-center{position:absolute;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1;}
+.macro-ring-val{font-size:13px;font-weight:800;color:#1a1a1a;}
+.macro-ring-unit{font-size:9px;color:#999;}
+.macro-ring-label{font-size:11px;font-weight:600;color:#666;}
+.food-timeline{margin-top:1.25rem;}
+.food-timeline h4{font-size:13px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.5rem;}
+.flt-entry{display:flex;align-items:flex-start;gap:0.65rem;padding:0.5rem 0;border-bottom:1px solid #f0f0f0;}
+.flt-entry:last-child{border-bottom:none;}
+.flt-dot{width:10px;height:10px;border-radius:50%;margin-top:3px;flex-shrink:0;}
+.flt-dot.green{background:#22c55e;}.flt-dot.yellow{background:#f59e0b;}.flt-dot.red{background:#E82C2C;}
+.flt-body{flex:1;}
+.flt-top{display:flex;justify-content:space-between;align-items:baseline;}
+.flt-meal{font-size:13px;font-weight:700;color:#1a1a1a;}
+.flt-cal{font-size:12px;font-weight:600;color:#666;}
+.flt-time{font-size:11px;color:#aaa;margin-top:1px;}
+.save-meal-btn{background:transparent;border:1px solid #ddd;border-radius:7px;padding:0.35rem 0.85rem;font-size:12px;color:#666;cursor:pointer;margin-top:0.75rem;display:block;width:100%;text-align:center;}
+.save-meal-btn:hover{background:#f5f5f5;}
+.saved-meals-section{margin-top:1.25rem;}
+.saved-meals-section h4{font-size:13px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.5rem;}
+.saved-meal-btn{background:#f5f5f5;border:1px solid #e5e5e5;border-radius:8px;padding:0.4rem 0.85rem;font-size:13px;font-weight:500;color:#1a1a1a;cursor:pointer;margin:0 0.4rem 0.4rem 0;display:inline-block;}
+.saved-meal-btn:hover{background:#eee;}
 .rc-score-locked{background:#fafafa;border:1px solid #e5e5e5;border-radius:10px;padding:1rem;text-align:center;margin-top:1rem;}
 .rc-score-locked p{font-size:13px;color:#888;margin-bottom:8px;}
 .rc-score{background:#f5fff8;border:1px solid #b6e8c7;border-radius:10px;padding:1rem;text-align:center;margin-top:1rem;}
@@ -310,6 +328,7 @@ input[type=number],select{width:100%;font-size:14px;font-family:inherit;border-r
       <h1>&#127822; <span>Food Log</span></h1>
       <p>Log a meal and get instant calories, macros &amp; nutrition insights.</p>
     </div>
+    <div id="macroRings"></div>
     <div class="card">
       <div class="section">
         <label>Meal name</label>
@@ -323,7 +342,8 @@ input[type=number],select{width:100%;font-size:14px;font-family:inherit;border-r
       <button class="ask-btn" style="margin-top:1.25rem;" onclick="logFood()">&#10024; Analyze This Meal</button>
     </div>
     <div id="foodResponse"></div>
-    <div id="foodLogList" class="food-log-list"></div>
+    <div id="savedMealsSection"></div>
+    <div id="foodTimeline"></div>
   </div>
 
 <script>
@@ -822,36 +842,119 @@ Instructions:
 // ── End Get Your Life Together ──────────────────────────────────
 
 // ── Food Log ────────────────────────────────────────────────────
-function getFoodLogToday(){
-  const key='vca_food_log_'+new Date().toISOString().slice(0,10);
-  return JSON.parse(localStorage.getItem(key)||'[]');
-}
-function saveFoodLogEntry(meal,desc){
-  const key='vca_food_log_'+new Date().toISOString().slice(0,10);
+const flKey=()=>'vca_food_log_'+new Date().toISOString().slice(0,10);
+let _lastMealForSave=null;
+
+function getFoodLogToday(){return JSON.parse(localStorage.getItem(flKey())||'[]');}
+
+function saveFoodLogEntry(meal,desc,macros){
   const entries=getFoodLogToday();
-  entries.push({meal,desc,time:new Date().toLocaleTimeString([],{hour:'numeric',minute:'2-digit'})});
-  localStorage.setItem(key,JSON.stringify(entries));
+  entries.push({meal,desc,time:new Date().toLocaleTimeString([],{hour:'numeric',minute:'2-digit'}),calories:macros.calories||0,protein:macros.protein||0,carbs:macros.carbs||0,fat:macros.fat||0});
+  localStorage.setItem(flKey(),JSON.stringify(entries));
 }
-function renderFoodLog(){
-  const list=document.getElementById('foodLogList');
-  if(!list)return;
+
+function getDailyTotals(){
+  return getFoodLogToday().reduce((a,e)=>({calories:a.calories+(e.calories||0),protein:a.protein+(e.protein||0),carbs:a.carbs+(e.carbs||0),fat:a.fat+(e.fat||0)}),{calories:0,protein:0,carbs:0,fat:0});
+}
+
+function macroRingHtml(label,current,target,color){
+  const r=26,circ=2*Math.PI*r,offset=(circ*Math.max(0,1-current/target)).toFixed(1);
+  const unit=label==='Cal'?'kcal':'g';
+  return `<div class="macro-ring-wrap"><div class="macro-ring-svg-wrap"><svg width="68" height="68" viewBox="0 0 68 68"><circle cx="34" cy="34" r="${r}" fill="none" stroke="#ececec" stroke-width="5"/><circle cx="34" cy="34" r="${r}" fill="none" stroke="${color}" stroke-width="5" stroke-dasharray="${circ.toFixed(1)}" stroke-dashoffset="${offset}" stroke-linecap="round" transform="rotate(-90 34 34)"/></svg><div class="macro-ring-center"><span class="macro-ring-val">${current}</span><span class="macro-ring-unit">${unit}</span></div></div><div class="macro-ring-label">${label}</div></div>`;
+}
+
+function renderMacroRings(){
+  const el=document.getElementById('macroRings');
+  if(!el)return;
+  const t=getDailyTotals();
+  el.innerHTML=`<div class="macro-rings">${macroRingHtml('Cal',t.calories,2000,'#E82C2C')}${macroRingHtml('Protein',t.protein,150,'#3b82f6')}${macroRingHtml('Carbs',t.carbs,200,'#f59e0b')}${macroRingHtml('Fat',t.fat,65,'#22c55e')}</div>`;
+}
+
+function renderFoodTimeline(){
+  const el=document.getElementById('foodTimeline');
+  if(!el)return;
   const entries=getFoodLogToday();
-  if(!entries.length){list.innerHTML='';return;}
-  list.innerHTML='<h4>Today\'s log</h4>'+entries.map(e=>`<div class="food-log-entry"><div class="fle-meta"><span class="fle-meal">${e.meal||'Meal'}</span><span class="fle-time">${e.time}</span></div><div class="fle-desc">${e.desc}</div></div>`).join('');
+  if(!entries.length){el.innerHTML='';return;}
+  const rows=entries.slice().reverse().map(e=>{
+    const cal=e.calories||0,dot=cal<600?'green':cal<900?'yellow':'red';
+    return `<div class="flt-entry"><div class="flt-dot ${dot}"></div><div class="flt-body"><div class="flt-top"><span class="flt-meal">${e.meal||'Meal'}</span><span class="flt-cal">${cal} kcal</span></div><div class="flt-time">${e.time}</div></div></div>`;
+  }).join('');
+  el.innerHTML=`<div class="food-timeline"><h4>Today's meals</h4>${rows}</div>`;
 }
+
+function getSavedMeals(){return JSON.parse(localStorage.getItem('vca_saved_meals')||'[]');}
+
+function addSavedMeal(){
+  if(!_lastMealForSave)return;
+  const {meal,desc}=_lastMealForSave;
+  const meals=getSavedMeals();
+  if(meals.some(m=>m.meal===meal&&m.desc===desc)){return;}
+  meals.unshift({meal,desc});
+  if(meals.length>10)meals.length=10;
+  localStorage.setItem('vca_saved_meals',JSON.stringify(meals));
+  renderSavedMeals();
+  document.querySelector('.save-meal-btn').textContent='✓ Saved';
+}
+
+function renderSavedMeals(){
+  const el=document.getElementById('savedMealsSection');
+  if(!el)return;
+  const meals=getSavedMeals();
+  if(!meals.length){el.innerHTML='';return;}
+  el.innerHTML=`<div class="saved-meals-section"><h4>Saved meals</h4><div id="savedMealBtns"></div></div>`;
+  const container=document.getElementById('savedMealBtns');
+  meals.forEach((m,i)=>{
+    const btn=document.createElement('button');
+    btn.className='saved-meal-btn';
+    btn.textContent=m.meal||(m.desc.length>28?m.desc.substring(0,28)+'…':m.desc);
+    btn.onclick=()=>quickLogMeal(i);
+    container.appendChild(btn);
+  });
+}
+
+async function quickLogMeal(idx){
+  const meals=getSavedMeals();
+  if(!meals[idx])return;
+  document.getElementById('foodMeal').value=meals[idx].meal||'';
+  document.getElementById('foodDesc').value=meals[idx].desc||'';
+  await logFood();
+}
+
 async function logFood(){
   const meal=document.getElementById('foodMeal').value.trim();
   const desc=document.getElementById('foodDesc').value.trim();
   if(!desc){alert('Please describe what you ate.');return;}
-  saveFoodLogEntry(meal||'Meal',desc);
+  _lastMealForSave={meal:meal||'Meal',desc};
+
   const savedPlan=JSON.parse(localStorage.getItem('vca_plan_context')||'null');
   const planCtx=savedPlan?'\n\nUser\'s active plan goals: '+savedPlan.goal:'';
-  const prompt='You are a nutrition analyst. The user logged this meal:\n- Meal: '+(meal||'unspecified')+'\n- Description: '+desc+planCtx+'\n\nRespond with EXACTLY this structure (use the bold headers):\n**Estimated calories:** [number] kcal\n**Macros:** Protein: Xg | Carbs: Xg | Fat: Xg\n**Nutritional quality:** [1-2 sentence honest assessment of this meal\'s quality]\n'+(savedPlan?'**Plan fit:** [1 sentence on how this fits or doesn\'t fit their goals]\n':'')+'\nUse realistic estimates based on typical portions if not specified. Be direct and factual.';
-  await callClaude(prompt,'foodResponse','Nutrition breakdown');
+  const prompt='You are a nutrition analyst and direct coach. The user logged this meal:\n- Meal: '+(meal||'unspecified')+'\n- Description: '+desc+planCtx+'\n\nRespond with EXACTLY this structure. First line must be the DATA line with integer estimates:\n\nDATA:{"calories":0,"protein":0,"carbs":0,"fat":0}\n\n**Estimated calories:** X kcal\n**Macros:** Protein: Xg | Carbs: Xg | Fat: Xg\n**Nutritional quality:** [1-2 sentence honest assessment]\n'+(savedPlan?'**Plan fit:** [1 sentence connecting this meal to their goals]\n':'')+'**Coach:** [2-3 sentence direct coaching reaction — be specific to what was logged, praise what\'s good, flag what to watch, connect to their goals]\n\nReplace DATA values with realistic integer estimates.';
+
+  const responseDiv=document.getElementById('foodResponse');
+  responseDiv.innerHTML='<div class="response-card"><h3>&#9825; Nutrition breakdown</h3><div class="loading-dots"><span></span><span></span><span></span></div><p style="font-size:13px;color:#888;margin-top:10px">Analyzing…</p></div>';
+
+  try{
+    const res=await fetch('/.netlify/functions/claude-proxy',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-5',max_tokens:600,messages:[{role:'user',content:prompt}]})});
+    const data=await res.json();
+    let text=data.content?.map(c=>c.text||'').join('')||'Something went wrong.';
+    let macros={calories:0,protein:0,carbs:0,fat:0};
+    const dm=text.match(/DATA:(\{[^}]+\})/);
+    if(dm){try{macros=JSON.parse(dm[1]);}catch(e){}}
+    const displayText=text.replace(/DATA:\{[^}]+\}\n?/,'').trim();
+    saveFoodLogEntry(meal||'Meal',desc,macros);
+    responseDiv.innerHTML=`<div class="response-card"><h3>&#9825; Nutrition breakdown</h3><div class="body">${renderMarkdown(displayText)}</div><button class="save-meal-btn" onclick="addSavedMeal()">&#128190; Save this meal</button></div>`;
+  }catch(e){
+    responseDiv.innerHTML='<div class="response-card"><p style="color:#c01f1f">Something went wrong. Please try again.</p></div>';
+  }
+
   document.getElementById('foodMeal').value='';
   document.getElementById('foodDesc').value='';
-  renderFoodLog();
+  renderMacroRings();
+  renderFoodTimeline();
+  renderSavedMeals();
 }
+
+function renderFoodLog(){renderMacroRings();renderFoodTimeline();renderSavedMeals();}
 // ── End Food Log ─────────────────────────────────────────────────
 
 checkSubscription();

@@ -17,15 +17,16 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Syne:wght@400;700&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:linear-gradient(to bottom,#0d0d0d 0%,#150808 100%);background-attachment:fixed;color:#e8e8e8;min-height:100vh;}
-#app{max-width:620px;margin:0 auto;padding:1.25rem 1rem 2rem;background:linear-gradient(to bottom,#161616 0%,#1c1010 100%);min-height:100vh;position:relative;}
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:linear-gradient(to bottom,#0d0d0d 0%,#150808 100%);background-attachment:fixed;color:#e8e8e8;min-height:100vh;overflow-x:hidden;}
+#app{max-width:620px;margin:0 auto;padding:1.25rem 1rem 2rem;background:linear-gradient(to bottom,#161616 0%,#1c1010 100%);min-height:100vh;position:relative;overflow-x:hidden;}
 ::-webkit-scrollbar{width:8px;}
 ::-webkit-scrollbar-track{background:#0d0d0d;}
 ::-webkit-scrollbar-thumb{background:#333333;border-radius:4px;}
 ::-webkit-scrollbar-thumb:hover{background:#e53e3e;}
-.logo-header{display:flex;align-items:center;gap:14px;margin-bottom:1.5rem;padding:1.1rem 1.1rem;border-radius:18px;background:#1e1e1e;box-shadow:0 2px 14px rgba(0,0,0,0.4);}
-.logo-header img{width:90px;height:90px;object-fit:contain;}
-.logo-header h1{font-family:'Clash Display','Syne',sans-serif;font-size:1.6rem;font-weight:700;color:#ffffff;letter-spacing:-0.4px;}
+.logo-header{display:flex;align-items:center;gap:14px;margin-bottom:1.5rem;padding:1.1rem 1.1rem;border-radius:18px;background:#1e1e1e;box-shadow:0 2px 14px rgba(0,0,0,0.4);position:relative;z-index:10;}
+.logo-icon-wrap{display:flex;align-items:center;flex-shrink:0;}
+.logo-icon-wrap img{width:64px;height:64px;object-fit:contain;}
+.logo-header h1{font-family:'Clash Display','Syne',sans-serif;font-size:1.8rem;font-weight:800;color:#ffffff;letter-spacing:-0.4px;}
 .logo-header p{font-size:1rem;color:#888888;margin-top:2px;}
 .tab-row{display:flex;border:none;border-bottom:2px solid #2a2a2a;border-radius:0;overflow:visible;margin-bottom:1.5rem;background:#161616;}
 .tab{flex:1;padding:10px 4px 10px;font-family:'Clash Display','Syne',sans-serif;font-size:11.5px;font-weight:500;background:transparent;color:#666666;border:none;border-bottom:3px solid transparent;margin-bottom:-2px;cursor:pointer;transition:color 0.22s ease,border-color 0.22s ease;}
@@ -46,7 +47,7 @@ select option{background:#2a2a2a;color:#ffffff;}
 .mood-label{font-family:'Inter',sans-serif;font-size:11px;color:#888888;display:block;margin-top:4px;}
 .mood-btn.selected .mood-label{color:#e53e3e;}
 .pill-row{display:flex;flex-wrap:wrap;gap:8px;}
-.pill{font-family:'Inter',sans-serif;padding:7px 16px;border-radius:999px;border:1.5px solid #333333;background:#2a2a2a;font-size:13px;color:#ffffff;cursor:pointer;transition:all 0.18s ease;font-weight:500;}
+.pill{font-family:'Inter',sans-serif;padding:7px 16px;border-radius:999px;border:1.5px solid #333333;background:#2a2a2a;font-size:13px;color:#ffffff;cursor:pointer;transition:all 0.18s ease;font-weight:500;box-sizing:border-box;max-width:100%;word-break:break-word;}
 .pill:hover{border-color:#666666;transform:scale(1.03);}
 .pill.selected{background:#2a2a2a;border:2px solid #e53e3e;color:#ffffff;font-weight:600;animation:pillGlow 2s ease-in-out infinite;}
 .pill:active{transform:scale(0.97);}
@@ -167,15 +168,87 @@ select option{background:#2a2a2a;color:#ffffff;}
 .app-footer{text-align:center;font-size:11px;color:#666666;padding:1.5rem 1rem 1rem;line-height:1.5;background:linear-gradient(to bottom,#1c1010,#1a0808);}
 .fade-in-el{opacity:0;transition:opacity 0.5s ease;}
 .fade-in-el.visible{opacity:1;}
+#auth-screen{min-height:100vh;background:linear-gradient(to bottom,#0d0d0d 0%,#150808 100%);display:flex;align-items:center;justify-content:center;padding:1rem;}
+.auth-card{background:#1e1e1e;border-radius:20px;padding:2rem 1.5rem;max-width:380px;width:100%;box-shadow:0 4px 24px rgba(0,0,0,0.5);border:1px solid #2a2a2a;}
+.auth-logo{text-align:center;margin-bottom:1.5rem;}
+.auth-logo img{width:72px;height:72px;object-fit:contain;border-radius:12px;}
+.auth-logo h2{font-family:'Clash Display','Syne',sans-serif;font-size:1.4rem;font-weight:800;color:#fff;margin-top:10px;margin-bottom:0;}
+.auth-logo p{font-size:12px;color:#888;margin-top:4px;}
+.auth-title{font-family:'Clash Display','Syne',sans-serif;font-size:1rem;font-weight:700;color:#fff;text-align:center;margin-bottom:1.25rem;}
+.auth-field{width:100%;font-size:14px;font-family:'Inter',-apple-system,sans-serif;border-radius:12px;border:none;padding:12px 14px;background:#2a2a2a;color:#fff;outline:none;box-sizing:border-box;margin-bottom:0.75rem;transition:box-shadow 0.2s ease;}
+.auth-field:focus{box-shadow:0 0 0 2px #e53e3e;}
+.auth-field-wrap{position:relative;margin-bottom:0.75rem;}
+.auth-field-wrap .auth-field{margin-bottom:0;padding-right:42px;}
+.auth-pw-toggle{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#555;padding:0;display:flex;align-items:center;line-height:1;transition:color 0.18s ease;}
+.auth-pw-toggle:hover{color:#ccc;}
+.auth-submit{width:100%;padding:13px;border-radius:12px;border:none;background:radial-gradient(ellipse at center,#f04040 0%,#E82C2C 70%);color:#fff;font-family:'Clash Display','Syne',sans-serif;font-size:15px;font-weight:600;cursor:pointer;margin-top:0.25rem;transition:all 0.2s ease;box-shadow:0 3px 12px rgba(229,62,62,0.3);}
+.auth-submit:hover{transform:scale(1.02);box-shadow:0 8px 25px rgba(229,62,62,0.4);}
+.auth-submit:disabled{opacity:0.6;cursor:not-allowed;transform:none;}
+.auth-toggle{text-align:center;margin-top:1rem;font-size:13px;color:#888;}
+.auth-toggle a{color:#e53e3e;cursor:pointer;font-weight:600;}
+.auth-msg{border-radius:10px;padding:10px 12px;font-size:13px;margin-bottom:0.75rem;display:none;}
+.auth-msg.error{background:#2a1010;border:1px solid #e53e3e;color:#e53e3e;}
+.auth-msg.success{background:#0a1a0a;border:1px solid #2a6a2a;color:#4aaa6a;}
+.profile-wrap{position:relative;margin-left:auto;flex-shrink:0;display:none;}
+.profile-avatar{width:48px;height:48px;border-radius:50%;background:#2a2a2a;border:1.5px solid #333;color:#ccc;font-family:'Clash Display','Syne',sans-serif;font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:border-color 0.18s ease,color 0.18s ease;padding:0;line-height:1;overflow:hidden;}
+.profile-avatar:hover,.profile-avatar.open{border-color:#e53e3e;color:#fff;}
+.profile-avatar-img{width:40px;height:40px;object-fit:contain;pointer-events:none;display:block;}
+.profile-dropdown{position:absolute;top:calc(100% + 8px);right:0;min-width:230px;background:#1e1e1e;border:1px solid #2a2a2a;border-radius:14px;box-shadow:0 8px 28px rgba(0,0,0,0.55);z-index:200;overflow:hidden;}
+.pd-section{padding:12px 14px;}
+.pd-email{font-size:12px;color:#888;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.pd-status{margin-top:6px;display:flex;align-items:center;gap:6px;font-size:12px;color:#888;}
+.pd-plan{margin-top:6px;font-size:12px;color:#888;line-height:1.5;}
+.pd-upgrade{display:inline-block;margin-top:7px;font-size:12px;font-weight:600;color:#e53e3e;cursor:pointer;background:none;border:none;padding:0;font-family:'Inter',sans-serif;}
+.pd-upgrade:hover{text-decoration:underline;}
+.pd-divider{height:1px;background:#2a2a2a;margin:0;}
+.pd-logout{width:100%;padding:11px 14px;background:none;border:none;color:#888;font-size:13px;font-family:'Inter',sans-serif;text-align:left;cursor:pointer;transition:color 0.18s ease,background 0.18s ease;display:block;}
+.pd-logout:hover{color:#e53e3e;background:#1a1010;}
 </style>
 </head>
 <body>
-<div id="app">
+<div id="auth-screen" style="display:none;">
+  <div class="auth-card">
+    <div class="auth-logo">
+      <img src="logo-icon.png" alt="Vital Coach AI">
+      <h2>Vital Coach AI</h2>
+      <p>The AI that holds you accountable.</p>
+    </div>
+    <div id="auth-title" class="auth-title">Log in to your account</div>
+    <div id="auth-msg" class="auth-msg"></div>
+    <input id="auth-email" class="auth-field" type="email" placeholder="Email address" autocomplete="email">
+    <div class="auth-field-wrap">
+      <input id="auth-password" class="auth-field" type="password" placeholder="Password" autocomplete="current-password">
+      <button type="button" class="auth-pw-toggle" id="auth-pw-toggle" onclick="togglePasswordVisibility()" aria-label="Toggle password visibility">
+        <svg id="auth-pw-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+      </button>
+    </div>
+    <button class="auth-submit" onclick="handleAuthSubmit()">Log In</button>
+    <div class="auth-toggle">
+      <span id="auth-toggle-text">Don't have an account?</span> <a onclick="toggleAuthMode()" id="auth-toggle-link">Sign up</a>
+    </div>
+  </div>
+</div>
+<div id="app" style="display:none;">
   <div class="logo-header">
-    <img src="vital-coach-ai-transparent.png" width="90" height="90" style="object-fit:contain;" alt="Vital Coach AI" id="main-logo-img">
+    <div class="logo-icon-wrap"><img src="logo-icon.png" alt="Vital Coach AI" id="main-logo-img"></div>
     <div>
       <h1>Vital Coach AI</h1>
       <p>The AI that holds you accountable when you can't hold yourself.</p>
+    </div>
+    <div class="profile-wrap" id="profile-wrap">
+      <button class="profile-avatar" id="profile-avatar" onclick="toggleProfileDropdown()" aria-label="Account menu"><img src="logo-icon.png" class="profile-avatar-img" alt=""></button>
+      <div class="profile-dropdown" id="profile-dropdown" style="display:none;">
+        <div class="pd-section">
+          <div class="pd-email" id="pd-email">—</div>
+          <div class="pd-status">
+            <span id="pd-status-text">Free</span>
+            <button class="pd-upgrade" id="pd-upgrade-btn" onclick="toggleProfileDropdown();document.getElementById('upgradeBtn')?.click()" style="display:none;">Upgrade to Pro →</button>
+          </div>
+          <div class="pd-plan" id="pd-plan">No plan saved yet</div>
+        </div>
+        <div class="pd-divider"></div>
+        <button class="pd-logout" onclick="handleSignOut()">Log out</button>
+      </div>
     </div>
   </div>
 
@@ -189,7 +262,7 @@ select option{background:#2a2a2a;color:#ffffff;}
 
   <div id="checkin" class="page active">
     <div class="plan-hero">
-      <img src="logo-icon.png" class="tab-hero-logo" width="52" height="52" style="display:block;margin:0 auto 12px auto;" alt="Vital Coach AI">
+      <img src="logo-icon.png" class="tab-hero-logo" style="width:80px;height:auto;display:block;margin:0 auto 12px auto;" alt="Vital Coach AI">
       <h1>&#9825; <span>Daily Check-in</span></h1>
       <p>Tell it what you're working on. It asks if you did it. When you didn't — it wants to know why.</p>
     </div>
@@ -257,7 +330,7 @@ select option{background:#2a2a2a;color:#ffffff;}
 
   <div id="plan" class="page">
   <div class="plan-hero">
-    <img src="logo-icon.png" class="tab-hero-logo" width="52" height="52" style="display:block;margin:0 auto 12px auto;" alt="Vital Coach AI">
+    <img src="logo-icon.png" class="tab-hero-logo" style="width:80px;height:auto;display:block;margin:0 auto 12px auto;" alt="Vital Coach AI">
     <h1>Your free personalized fitness plan,<br><span>built by AI in 60 seconds</span></h1>
     <p>Answer a few quick questions and get a custom workout routine + diet plan tailored to your goals</p>
   </div>
@@ -371,7 +444,7 @@ select option{background:#2a2a2a;color:#ffffff;}
 
   <div id="realitycheck" class="page">
     <div class="plan-hero" style="padding-bottom:0.75rem;">
-      <img src="logo-icon.png" class="tab-hero-logo" width="52" height="52" style="display:block;margin:0 auto 12px auto;" alt="Vital Coach AI">
+      <img src="logo-icon.png" class="tab-hero-logo" style="width:80px;height:auto;display:block;margin:0 auto 12px auto;" alt="Vital Coach AI">
       <h1>&#9889; <span>Get Your Life Together</span></h1>
       <p>You know something needs to change. Stop guessing and find out what's actually in your way.</p>
     </div>
@@ -387,7 +460,7 @@ select option{background:#2a2a2a;color:#ffffff;}
 
   <div id="foodlog" class="page">
     <div class="plan-hero">
-      <img src="logo-icon.png" class="tab-hero-logo" width="52" height="52" style="display:block;margin:0 auto 12px auto;" alt="Vital Coach AI">
+      <img src="logo-icon.png" class="tab-hero-logo" style="width:80px;height:auto;display:block;margin:0 auto 12px auto;" alt="Vital Coach AI">
       <h1>&#127822; <span>Food Log</span></h1>
       <p>Log a meal and get instant calories, macros &amp; nutrition insights.</p>
     </div>
@@ -414,9 +487,455 @@ select option{background:#2a2a2a;color:#ffffff;}
     <div id="foodTimeline"></div>
   </div>
 
+  <div class="app-footer" id="app-footer">For general wellness guidance only. Consult a healthcare professional before starting a new diet or exercise program.</div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
+const SUPABASE_URL = 'https://gdzdnpbhbgbrgccyjqkf.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdkemRucGJoYmdicmdjY3lqcWtmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE2MzczNDIsImV4cCI6MjA5NzIxMzM0Mn0.3cMIq9e3DYX47CrzZK4hhBaz4r2vie6Px7ubZ_CNYOY';
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// ── Plan context cache ────────────────────────────────────────────────────────
+let _planContextCache = undefined; // undefined=not loaded, null=no plan, object=plan data
+
+function _dbRowToPlan(row) {
+  if (!row) return null;
+  return {
+    goal:        row.goal,
+    goals:       row.goals,
+    height:      row.height,
+    weight:      row.weight,
+    sex:         row.sex,
+    activity:    row.activity,
+    workoutPref: row.workout_pref,
+    daysPerWeek: row.days_per_week,
+    diet:        row.diet,
+    savedAt:     row.saved_at,
+  };
+}
+
+async function getPlanContext() {
+  if (_planContextCache !== undefined) return _planContextCache;
+  try {
+    const { data: { user } } = await supabaseClient.auth.getUser();
+    if (!user) { _planContextCache = null; return null; }
+    const { data, error } = await supabaseClient
+      .from('plan_context')
+      .select('*')
+      .eq('user_id', user.id)
+      .maybeSingle();
+    if (error) throw error;
+    _planContextCache = _dbRowToPlan(data);
+    return _planContextCache;
+  } catch(e) {
+    console.error('[getPlanContext]', e);
+    return null;
+  }
+}
+// ─────────────────────────────────────────────────────────────────────────────
+
+// ── Food log cache ────────────────────────────────────────────────────────────
+let _foodLogTodayCache = undefined;
+let _savedMealsCache   = undefined;
+
+async function _loadFoodLogToday() {
+  if (_foodLogTodayCache !== undefined) return _foodLogTodayCache;
+  try {
+    const { data: { user } } = await supabaseClient.auth.getUser();
+    if (!user) { _foodLogTodayCache = []; return []; }
+    const { data, error } = await supabaseClient
+      .from('food_log')
+      .select('meal, description, time_str, calories, protein, carbs, fat')
+      .eq('user_id', user.id)
+      .eq('date', todayStr())
+      .order('logged_at', { ascending: true });
+    if (error) throw error;
+    _foodLogTodayCache = (data || []).map(r => ({
+      meal: r.meal, desc: r.description, time: r.time_str,
+      calories: r.calories, protein: r.protein, carbs: r.carbs, fat: r.fat,
+    }));
+    return _foodLogTodayCache;
+  } catch(e) {
+    const raw = localStorage.getItem(flKey());
+    return raw ? JSON.parse(raw) : [];
+  }
+}
+
+async function _loadSavedMeals() {
+  if (_savedMealsCache !== undefined) return _savedMealsCache;
+  try {
+    const { data: { user } } = await supabaseClient.auth.getUser();
+    if (!user) { _savedMealsCache = []; return []; }
+    const { data, error } = await supabaseClient
+      .from('saved_meals')
+      .select('meal, description')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false })
+      .limit(10);
+    if (error) throw error;
+    _savedMealsCache = (data || []).map(r => ({ meal: r.meal, desc: r.description }));
+    return _savedMealsCache;
+  } catch(e) {
+    console.error('[_loadSavedMeals]', e);
+    return [];
+  }
+}
+// ─────────────────────────────────────────────────────────────────────────────
+
+// ── Reality Check cache ───────────────────────────────────────────────────────
+let _rcProfileCache  = undefined;
+let _rcCheckinsCache = undefined;
+
+async function getRcProfile() {
+  if (_rcProfileCache !== undefined) return _rcProfileCache;
+  try {
+    const { data: { user } } = await supabaseClient.auth.getUser();
+    if (!user) { _rcProfileCache = null; return null; }
+    const { data, error } = await supabaseClient
+      .from('reality_check_profile')
+      .select('*')
+      .eq('user_id', user.id)
+      .maybeSingle();
+    if (error) throw error;
+    _rcProfileCache = data ? { goal: data.goal, days: data.days, obstacle: data.obstacle } : null;
+    return _rcProfileCache;
+  } catch(e) {
+    console.error('[getRcProfile]', e);
+    return null;
+  }
+}
+
+async function _loadRcCheckins() {
+  if (_rcCheckinsCache !== undefined) return _rcCheckinsCache;
+  try {
+    const { data: { user } } = await supabaseClient.auth.getUser();
+    if (!user) { _rcCheckinsCache = []; return []; }
+    const { data, error } = await supabaseClient
+      .from('rc_checkins')
+      .select('date, workout, eating, energy')
+      .eq('user_id', user.id)
+      .order('date', { ascending: true });
+    if (error) throw error;
+    _rcCheckinsCache = data || [];
+    return _rcCheckinsCache;
+  } catch(e) {
+    console.error('[_loadRcCheckins]', e);
+    return [];
+  }
+}
+// ─────────────────────────────────────────────────────────────────────────────
+
+// ── Auth ──────────────────────────────────────────────────────────────────────
+let authMode = 'login';
+
+function showAuth() {
+  document.getElementById('auth-screen').style.display = 'flex';
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('profile-wrap').style.display = 'none';
+}
+
+function showApp() {
+  document.getElementById('auth-screen').style.display = 'none';
+  document.getElementById('app').style.display = '';
+  document.getElementById('profile-wrap').style.display = 'block';
+}
+
+function toggleAuthMode() {
+  authMode = authMode === 'login' ? 'signup' : 'login';
+  const isLogin = authMode === 'login';
+  document.getElementById('auth-title').textContent = isLogin ? 'Log in to your account' : 'Create your account';
+  document.querySelector('.auth-submit').textContent = isLogin ? 'Log In' : 'Sign Up';
+  document.getElementById('auth-toggle-text').textContent = isLogin ? "Don't have an account?" : 'Already have an account?';
+  document.getElementById('auth-toggle-link').textContent = isLogin ? 'Sign up' : 'Log in';
+  const msg = document.getElementById('auth-msg');
+  msg.style.display = 'none';
+  msg.className = 'auth-msg';
+  msg.textContent = '';
+  if (isLogin) {
+    document.getElementById('auth-password').autocomplete = 'current-password';
+  } else {
+    document.getElementById('auth-password').autocomplete = 'new-password';
+  }
+}
+
+async function handleAuthSubmit() {
+  const email = document.getElementById('auth-email').value.trim();
+  const password = document.getElementById('auth-password').value;
+  const msg = document.getElementById('auth-msg');
+  const btn = document.querySelector('.auth-submit');
+
+  if (!email || !password) {
+    msg.className = 'auth-msg error';
+    msg.textContent = 'Please enter your email and password.';
+    msg.style.display = 'block';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = authMode === 'login' ? 'Logging in…' : 'Creating account…';
+  msg.style.display = 'none';
+
+  try {
+    let result;
+    if (authMode === 'login') {
+      result = await supabaseClient.auth.signInWithPassword({ email, password });
+    } else {
+      result = await supabaseClient.auth.signUp({ email, password });
+    }
+
+    if (result.error) {
+      msg.className = 'auth-msg error';
+      msg.textContent = result.error.message;
+      msg.style.display = 'block';
+    } else if (authMode === 'signup' && result.data.user && !result.data.session) {
+      msg.className = 'auth-msg success';
+      msg.textContent = 'Check your email to confirm your account, then log in.';
+      msg.style.display = 'block';
+    }
+    // Successful login: onAuthStateChange fires → showApp()
+  } catch(e) {
+    msg.className = 'auth-msg error';
+    msg.textContent = 'Something went wrong. Please try again.';
+    msg.style.display = 'block';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = authMode === 'login' ? 'Log In' : 'Sign Up';
+  }
+}
+
+async function handleSignOut() {
+  await supabaseClient.auth.signOut();
+  // onAuthStateChange fires → showAuth()
+}
+
+function togglePasswordVisibility() {
+  const input = document.getElementById('auth-password');
+  const icon = document.getElementById('auth-pw-icon');
+  const showing = input.type === 'text';
+  input.type = showing ? 'password' : 'text';
+  icon.outerHTML = showing
+    ? '<svg id="auth-pw-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>'
+    : '<svg id="auth-pw-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>';
+}
+
+// ── Profile dropdown ──────────────────────────────────────────────────────────
+function toggleProfileDropdown() {
+  const dropdown = document.getElementById('profile-dropdown');
+  const avatar = document.getElementById('profile-avatar');
+  const isOpen = dropdown.style.display !== 'none';
+  if (isOpen) {
+    dropdown.style.display = 'none';
+    avatar.classList.remove('open');
+  } else {
+    populateProfileDropdown();
+    dropdown.style.display = 'block';
+    avatar.classList.add('open');
+  }
+}
+
+async function populateProfileDropdown() {
+  // Email + avatar letter
+  const { data: { user } } = await supabaseClient.auth.getUser();
+  const email = user?.email || '';
+  document.getElementById('pd-email').textContent = email;
+
+  // Subscription status
+  const statusEl = document.getElementById('pd-status-text');
+  const upgradeBtn = document.getElementById('pd-upgrade-btn');
+  if (isPro) {
+    statusEl.innerHTML = 'Subscription <span class="pro-badge">PRO</span>';
+    upgradeBtn.style.display = 'none';
+  } else {
+    statusEl.textContent = 'Subscription: Free';
+    upgradeBtn.style.display = '';
+  }
+
+  // Plan summary
+  const planEl = document.getElementById('pd-plan');
+  const p = await getPlanContext();
+  if (p) {
+    const goal = p.goal || '';
+    const daysPerWeek = p.daysPerWeek || '';
+    const parts = [];
+    if (goal) parts.push('Goal: ' + goal);
+    if (daysPerWeek) parts.push(daysPerWeek + ' days/week');
+    planEl.textContent = parts.length ? parts.join(' · ') : 'Plan saved';
+  } else {
+    planEl.textContent = 'No plan saved yet';
+  }
+}
+
+document.addEventListener('click', function(e) {
+  const wrap = document.getElementById('profile-wrap');
+  const dropdown = document.getElementById('profile-dropdown');
+  if (wrap && !wrap.contains(e.target) && dropdown.style.display !== 'none') {
+    dropdown.style.display = 'none';
+    document.getElementById('profile-avatar').classList.remove('open');
+  }
+});
+// ─────────────────────────────────────────────────────────────────────────────
+
+async function migrateFromLocalStorage(userId) {
+  if (localStorage.getItem('vca_migrated')) return;
+
+  let allSucceeded = true;
+
+  // plan_context
+  const rawPlan = localStorage.getItem('vca_plan_context');
+  if (rawPlan) {
+    try {
+      const plan = JSON.parse(rawPlan);
+      const { error } = await supabaseClient.from('plan_context').upsert({
+        user_id:      userId,
+        goal:         plan.goal,
+        goals:        plan.goals,
+        height:       plan.height,
+        weight:       plan.weight,
+        sex:          plan.sex,
+        activity:     plan.activity,
+        workout_pref: plan.workoutPref,
+        days_per_week:plan.daysPerWeek,
+        diet:         plan.diet,
+        saved_at:     plan.savedAt,
+      }, { onConflict: 'user_id' });
+      if (error) throw error;
+      localStorage.removeItem('vca_plan_context');
+    } catch(e) {
+      console.error('[migrate] plan_context failed', e);
+      allSucceeded = false;
+    }
+  }
+
+  // reality_check_profile
+  const rawRcProfile = localStorage.getItem('vca_reality_check_profile');
+  if (rawRcProfile) {
+    try {
+      const profile = JSON.parse(rawRcProfile);
+      const { error } = await supabaseClient.from('reality_check_profile').upsert(
+        { user_id: userId, goal: profile.goal, days: profile.days, obstacle: profile.obstacle },
+        { onConflict: 'user_id' }
+      );
+      if (error) throw error;
+      localStorage.removeItem('vca_reality_check_profile');
+    } catch(e) {
+      console.error('[migrate] reality_check_profile failed', e);
+      allSucceeded = false;
+    }
+  }
+
+  // rc_checkins
+  const rawCheckins = localStorage.getItem('vca_rc_checkins');
+  if (rawCheckins) {
+    try {
+      const checkins = JSON.parse(rawCheckins);
+      if (checkins.length) {
+        const rows = checkins.map(c => ({
+          user_id: userId,
+          date:    c.date,
+          workout: c.workout,
+          eating:  c.eating,
+          energy:  c.energy,
+        }));
+        const { error } = await supabaseClient.from('rc_checkins').insert(rows);
+        if (error) throw error;
+      }
+      localStorage.removeItem('vca_rc_checkins');
+    } catch(e) {
+      console.error('[migrate] rc_checkins failed', e);
+      allSucceeded = false;
+    }
+  }
+
+  // saved_meals
+  const rawMeals = localStorage.getItem('vca_saved_meals');
+  if (rawMeals) {
+    try {
+      const meals = JSON.parse(rawMeals);
+      if (meals.length) {
+        const rows = meals.map(m => ({
+          user_id:     userId,
+          meal:        m.meal,
+          description: m.desc,
+        }));
+        const { error } = await supabaseClient.from('saved_meals').insert(rows);
+        if (error) throw error;
+      }
+      localStorage.removeItem('vca_saved_meals');
+    } catch(e) {
+      console.error('[migrate] saved_meals failed', e);
+      allSucceeded = false;
+    }
+  }
+
+  // food_log_* (one key per day)
+  const foodLogKeys = Object.keys(localStorage).filter(k => k.startsWith('vca_food_log_'));
+  for (const key of foodLogKeys) {
+    try {
+      const date = key.replace('vca_food_log_', '');
+      const entries = JSON.parse(localStorage.getItem(key) || '[]');
+      if (entries.length) {
+        const rows = entries.map(e => ({
+          user_id:     userId,
+          date:        date,
+          meal:        e.meal,
+          description: e.desc,
+          time_str:    e.time,
+          calories:    e.calories || 0,
+          protein:     e.protein  || 0,
+          carbs:       e.carbs    || 0,
+          fat:         e.fat      || 0,
+          logged_at:   new Date(date).toISOString(),
+        }));
+        const { error } = await supabaseClient.from('food_log').insert(rows);
+        if (error) throw error;
+      }
+      localStorage.removeItem(key);
+    } catch(e) {
+      console.error('[migrate] food_log ' + key + ' failed', e);
+      allSucceeded = false;
+    }
+  }
+
+  // clean up derived/unused keys regardless
+  localStorage.removeItem('vca_rc_last_used');
+
+  // invalidate all in-memory caches so next read fetches from Supabase
+  _planContextCache  = undefined;
+  _rcProfileCache    = undefined;
+  _rcCheckinsCache   = undefined;
+  _savedMealsCache   = undefined;
+  _foodLogTodayCache = undefined;
+
+  if (allSucceeded) {
+    localStorage.setItem('vca_migrated', '1');
+    console.log('[migrate] localStorage → Supabase migration complete');
+  } else {
+    console.warn('[migrate] Some sections failed — will retry on next login');
+  }
+}
+
+async function initAuth() {
+  const { data: { session } } = await supabaseClient.auth.getSession();
+  if (session) {
+    migrateFromLocalStorage(session.user.id); // fire-and-forget
+    showApp();
+  } else {
+    showAuth();
+  }
+
+  supabaseClient.auth.onAuthStateChange((_event, session) => {
+    if (session) {
+      migrateFromLocalStorage(session.user.id); // fire-and-forget
+      showApp();
+      if (isPro) { renderPlanTab(); } else { checkSubscription(); }
+    } else {
+      showAuth();
+    }
+  });
+}
+// ─────────────────────────────────────────────────────────────────────────────
+
 let mood='',energy='',days='',workoutDone='',waterIntake='';
 function switchTab(id,btn){
   const outgoing=document.querySelector('.page.active');
@@ -482,7 +1001,7 @@ async function getCheckinAdvice(){
   const timeStr=now.toLocaleTimeString([],{hour:'numeric',minute:'2-digit'});
   const period=hour<12?'morning':hour<17?'afternoon':hour<21?'evening':'night';
   const periodGuide=period==='morning'?'Most of the day is still ahead — focus on setting intentions, fueling well, and building momentum.':period==='afternoon'?'The day is in progress — focus on staying on track, energy management, and finishing strong.':period==='evening'?'The day is wrapping up — focus on recovery, reflection, and preparing for tomorrow.':'It\'s late — focus on winding down, sleep quality, and what they can reset tomorrow.';
-  const savedPlan=isPro?JSON.parse(localStorage.getItem('vca_plan_context')||'null'):null;
+  const savedPlan=isPro?await getPlanContext():null;
   const planCtx=savedPlan?'\n\nUser\'s saved plan context:\n- Plan goal: '+savedPlan.goal+'\n- Stats: '+savedPlan.height+', '+savedPlan.weight+'lbs\n- Trains '+savedPlan.daysPerWeek+' days/week ('+savedPlan.workoutPref+')\n- Diet: '+(savedPlan.diet&&savedPlan.diet.length?savedPlan.diet.join(', '):'no restrictions')+'\n- Today is a '+(workoutDayToday(savedPlan.daysPerWeek)?'scheduled WORKOUT day':'scheduled REST day')+' based on their plan.':'';
   const prompt='You are a warm wellness coach for Vital Coach AI. Check-in:\n- Time: '+timeStr+' ('+period+')\n- Mood: '+mood+'\n- Energy: '+(energy||'not specified')+'\n- Workout completed: '+(workoutDone||'not specified')+'\n- Calories today: '+(calories?calories+' kcal':'not specified')+'\n- Water intake: '+(waterIntake||'not specified')+'\n- Habits: '+(allHabits.length?allHabits.join(', '):'none')+'\n- Notes: '+(notes||'none')+planCtx+'\n\n'+periodGuide+'\n\nGive a short personalized response (3-5 sentences): acknowledge the time of day and their check-in data, give one actionable tip that fits where they are in the day'+(savedPlan?' and references their plan goal':'')+', close encouragingly. No bullet points.';
   await callClaude(prompt,'checkinResponse','Your coach says');
@@ -513,7 +1032,28 @@ async function generatePlan(){
   const prompt='You are an expert fitness and nutrition coach at Vital Coach AI. Create a single cohesive personalized plan that addresses ALL of the user\'s goals together:\n\n- Age: '+(age||'?')+', Sex: '+(sex||'?')+'\n- Height: '+(height||'?')+', Weight: '+(weight||'?')+'lbs\n- Activity: '+(activity||'?')+'\n- Goals: '+goalsStr+'\n- Workout preference: '+workoutStr+'\n- Days/week: '+(days||'?')+'\n- Diet: '+(diet.length?diet.join(', '):'none')+'\n- Conditions: '+(conditions||'none')+'\n- Notes: '+(extra||'none')+'\n\nProvide one integrated plan:\n1. **Weekly workout routine** with specific exercises, sets/reps — structured to advance all goals simultaneously, using the specified workout locations/equipment\n2. **Sample daily diet plan** with meals and portions\n3. **Three key tips** personalized to their combined goals\nEnd with a short motivational note.';
   await callClaude(prompt,'planResponse','Your personalized plan');
   const planData={goal:goalsStr,goals,height,weight,sex,activity,workoutPref:workoutStr,daysPerWeek:days,diet,savedAt:new Date().toISOString()};
-  localStorage.setItem('vca_plan_context',JSON.stringify(planData));
+  try {
+    const { data: { user } } = await supabaseClient.auth.getUser();
+    if (user) {
+      const { error } = await supabaseClient.from('plan_context').upsert({
+        user_id:      user.id,
+        goal:         planData.goal,
+        goals:        planData.goals,
+        height:       planData.height,
+        weight:       planData.weight,
+        sex:          planData.sex,
+        activity:     planData.activity,
+        workout_pref: planData.workoutPref,
+        days_per_week:planData.daysPerWeek,
+        diet:         planData.diet,
+        saved_at:     planData.savedAt,
+      }, { onConflict: 'user_id' });
+      if (error) throw error;
+      _planContextCache = planData;
+    }
+  } catch(e) {
+    console.error('[generatePlan] failed to save plan context', e);
+  }
   loadPlanBanner();
 }
 
@@ -524,12 +1064,11 @@ function workoutDayToday(daysPerWeek){
   return sched.includes(day);
 }
 
-function loadPlanBanner(){
-  const raw=localStorage.getItem('vca_plan_context');
+async function loadPlanBanner(){
+  const p=await getPlanContext();
   const banner=document.getElementById('planBanner');
   if(!banner) return;
-  if(!raw){banner.style.display='none';return;}
-  const p=JSON.parse(raw);
+  if(!p){banner.style.display='none';return;}
   if(isPro){
     const dayLabel=workoutDayToday(p.daysPerWeek)?'Workout day':'Rest day';
     banner.className='plan-banner';
@@ -542,9 +1081,12 @@ function loadPlanBanner(){
   }
 }
 
-let isPro = false;
+let isPro = new URLSearchParams(window.location.search).get('devpro') === '1';
 
 async function checkSubscription() {
+  if (isPro) { renderPlanTab(); return; } // devpro=1 bypass
+
+  // Post-checkout return from Stripe
   const params = new URLSearchParams(window.location.search);
   const sessionId = params.get('session_id');
   if (sessionId) {
@@ -552,45 +1094,52 @@ async function checkSubscription() {
       const res = await fetch('/.netlify/functions/verify-subscription', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({session_id: sessionId})
+        body: JSON.stringify({ session_id: sessionId })
       });
       const data = await res.json();
       if (data.active) {
         isPro = true;
-        localStorage.setItem('vca_pro', '1');
-        localStorage.setItem('vca_email', data.email || '');
         window.history.replaceState({}, '', '/');
-      } else {
-        localStorage.removeItem('vca_pro');
+        renderPlanTab();
+        return;
       }
     } catch(e) {}
   }
-  if (!isPro) {
-    const storedEmail = localStorage.getItem('vca_email');
-    if (storedEmail) {
+
+  // Fast path: read pro_status from Supabase profiles table
+  try {
+    const { data: { user } } = await supabaseClient.auth.getUser();
+    if (user) {
+      const { data: profile } = await supabaseClient
+        .from('profiles')
+        .select('pro_status')
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+      if (profile?.pro_status === true) {
+        isPro = true;
+        renderPlanTab();
+        return;
+      }
+
+      // Slow path: no profile row yet — check Stripe directly via server function
+      // check-subscription-status will backfill profiles if active
       try {
         const res = await fetch('/.netlify/functions/check-subscription-status', {
           method: 'POST',
           headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify({email: storedEmail})
+          body: JSON.stringify({ email: user.email, user_id: user.id })
         });
         const data = await res.json();
-        if (data.active) {
-          isPro = true;
-          localStorage.setItem('vca_pro', '1');
-        } else {
-          isPro = false;
-          localStorage.removeItem('vca_pro');
-        }
+        isPro = data.active === true;
       } catch(e) {
-        if (localStorage.getItem('vca_pro') === '1') {
-          isPro = true;
-        }
+        if (localStorage.getItem('vca_pro') === '1') isPro = true;
       }
-    } else {
-      localStorage.removeItem('vca_pro');
     }
+  } catch(e) {
+    if (localStorage.getItem('vca_pro') === '1') isPro = true;
   }
+
   renderPlanTab();
 }
 
@@ -606,10 +1155,11 @@ async function startCheckout(callerBtn) {
   const btn = callerBtn || document.getElementById('upgradeBtn');
   if(btn){btn.textContent='Loading...';btn.disabled=true;}
   try {
+    const { data: { user } } = await supabaseClient.auth.getUser();
     const res = await fetch('/.netlify/functions/create-checkout', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({})
+      body: JSON.stringify({ user_id: user?.id || '' })
     });
     const data = await res.json();
     if (data.url) {
@@ -655,28 +1205,41 @@ function rcOnboardSelect(btn, group) {
   btn.classList.add('selected');
 }
 
-function saveRcProfile() {
+async function saveRcProfile() {
   const goalBtn = document.querySelector('.rc-btn[data-group="rcGoal"].selected');
   const daysBtn = document.querySelector('.rc-btn[data-group="rcDays"].selected');
   const obstacleBtn = document.querySelector('.rc-btn[data-group="rcObstacle"].selected');
   if(!goalBtn||!daysBtn||!obstacleBtn){alert('Please answer all three questions.');return;}
   const profile = {goal:goalBtn.dataset.val, days:daysBtn.dataset.val, obstacle:obstacleBtn.dataset.val};
-  localStorage.setItem('vca_reality_check_profile', JSON.stringify(profile));
+  try {
+    const { data: { user } } = await supabaseClient.auth.getUser();
+    if (user) {
+      const { error } = await supabaseClient.from('reality_check_profile').upsert(
+        { user_id: user.id, goal: profile.goal, days: profile.days, obstacle: profile.obstacle },
+        { onConflict: 'user_id' }
+      );
+      if (error) throw error;
+      _rcProfileCache = profile;
+    }
+  } catch(e) {
+    console.error('[saveRcProfile] failed to save profile', e);
+  }
   renderRealityCheck();
 }
 
 function todayStr(){return new Date().toISOString().slice(0,10);}
 
-function rcUsedToday(){
-  return localStorage.getItem('vca_rc_last_used') === todayStr();
+async function rcUsedToday(){
+  const checkins = await _loadRcCheckins();
+  return checkins.some(c => c.date === todayStr());
 }
 
-function getRcCheckins(){
-  return JSON.parse(localStorage.getItem('vca_rc_checkins')||'[]');
+async function getRcCheckins(){
+  return _loadRcCheckins();
 }
 
-function getWeeklyScore(){
-  const checkins = getRcCheckins();
+async function getWeeklyScore(){
+  const checkins = await _loadRcCheckins();
   const now = new Date();
   const cutoff = new Date(now);
   cutoff.setDate(cutoff.getDate()-6);
@@ -688,8 +1251,8 @@ function getWeeklyScore(){
   return {days: recent.length, onTrack};
 }
 
-function shouldShowWeekly(){
-  const checkins = getRcCheckins();
+async function shouldShowWeekly(){
+  const checkins = await _loadRcCheckins();
   if(checkins.length < 7) return false;
   const oldest = new Date(checkins[0].date);
   const now = new Date();
@@ -697,13 +1260,13 @@ function shouldShowWeekly(){
   return diffDays >= 7 || new Date().getDay() === 0;
 }
 
-function renderRealityCheck() {
+async function renderRealityCheck() {
   const container = document.getElementById('rcContent');
   if(!container) return;
 
   // Onboarding: no profile yet
-  const profileRaw = localStorage.getItem('vca_reality_check_profile');
-  if(!profileRaw) {
+  const profile = await getRcProfile();
+  if(!profile) {
     container.innerHTML = `
       <div class="card">
         <div class="rc-onboard-step">
@@ -738,11 +1301,10 @@ function renderRealityCheck() {
     return;
   }
 
-  const profile = JSON.parse(profileRaw);
   rcWorkout=''; rcEating=''; rcEnergy='';
 
   // Already used today (free users)
-  if(!isPro && rcUsedToday()) {
+  if(!isPro && await rcUsedToday()) {
     container.innerHTML = `
       <div class="card">
         <div class="rc-locked">
@@ -758,9 +1320,9 @@ function renderRealityCheck() {
 
   // Weekly score
   let weeklyHtml = '';
-  if(shouldShowWeekly()) {
+  if(await shouldShowWeekly()) {
     if(isPro) {
-      const score = getWeeklyScore();
+      const score = await getWeeklyScore();
       weeklyHtml = `<div class="rc-score"><h4>📊 This week: ${score.onTrack}/${score.days} days on track</h4><p>Keep pushing — consistency compounds.</p></div>`;
     } else {
       weeklyHtml = `<div class="rc-score-locked"><p>🔒 Weekly scores are a Pro feature.</p><button class="rc-btn" onclick="startCheckout()" style="border-color:#E82C2C;color:#E82C2C;">Unlock with Pro</button></div>`;
@@ -805,17 +1367,26 @@ function renderRealityCheck() {
 
 async function submitRealityCheck() {
   if(!rcWorkout||!rcEating||!rcEnergy){alert('Please answer all three questions.');return;}
-  const profile = JSON.parse(localStorage.getItem('vca_reality_check_profile')||'{}');
+  const profile = await getRcProfile() || {};
   const excuse = document.getElementById('rcExcuse')?.value.trim()||'';
 
-  // Save check-in to history
-  const checkins = getRcCheckins();
-  checkins.push({date:todayStr(), workout:rcWorkout, eating:rcEating, energy:rcEnergy});
-  if(checkins.length > 30) checkins.splice(0, checkins.length-30);
-  localStorage.setItem('vca_rc_checkins', JSON.stringify(checkins));
-
-  // Mark used today
-  if(!isPro) localStorage.setItem('vca_rc_last_used', todayStr());
+  // Save check-in
+  try {
+    const { data: { user } } = await supabaseClient.auth.getUser();
+    if (user) {
+      const { error } = await supabaseClient.from('rc_checkins').insert({
+        user_id: user.id,
+        date:    todayStr(),
+        workout: rcWorkout,
+        eating:  rcEating,
+        energy:  rcEnergy,
+      });
+      if (error) throw error;
+      _rcCheckinsCache = undefined; // invalidate so next read fetches fresh
+    }
+  } catch(e) {
+    console.error('[submitRealityCheck] failed to save check-in', e);
+  }
 
   const prompt = `You are a direct, no-nonsense fitness accountability coach. Your job is to be honest — not mean, but not soft either. Skip the wellness fluff.
 
@@ -853,16 +1424,38 @@ Instructions:
 const flKey=()=>'vca_food_log_'+new Date().toISOString().slice(0,10);
 let _lastMealForSave=null;
 
-function getFoodLogToday(){return JSON.parse(localStorage.getItem(flKey())||'[]');}
+async function getFoodLogToday(){return _loadFoodLogToday();}
 
-function saveFoodLogEntry(meal,desc,macros){
-  const entries=getFoodLogToday();
-  entries.push({meal,desc,time:new Date().toLocaleTimeString([],{hour:'numeric',minute:'2-digit'}),calories:macros.calories||0,protein:macros.protein||0,carbs:macros.carbs||0,fat:macros.fat||0});
-  localStorage.setItem(flKey(),JSON.stringify(entries));
+async function saveFoodLogEntry(meal,desc,macros){
+  const time=new Date().toLocaleTimeString([],{hour:'numeric',minute:'2-digit'});
+  try {
+    const { data: { user } } = await supabaseClient.auth.getUser();
+    if (user) {
+      const { error } = await supabaseClient.from('food_log').insert({
+        user_id:     user.id,
+        date:        todayStr(),
+        meal:        meal,
+        description: desc,
+        time_str:    time,
+        calories:    macros.calories||0,
+        protein:     macros.protein||0,
+        carbs:       macros.carbs||0,
+        fat:         macros.fat||0,
+        logged_at:   new Date().toISOString(),
+      });
+      if (error) throw error;
+      _foodLogTodayCache = undefined;
+    }
+  } catch(e) {
+    console.error('[saveFoodLogEntry] Supabase error, falling back to localStorage:', e);
+    const entries=JSON.parse(localStorage.getItem(flKey())||'[]');
+    entries.push({meal,desc,time,calories:macros.calories||0,protein:macros.protein||0,carbs:macros.carbs||0,fat:macros.fat||0});
+    localStorage.setItem(flKey(),JSON.stringify(entries));
+  }
 }
 
-function getDailyTotals(){
-  return getFoodLogToday().reduce((a,e)=>({calories:a.calories+(e.calories||0),protein:a.protein+(e.protein||0),carbs:a.carbs+(e.carbs||0),fat:a.fat+(e.fat||0)}),{calories:0,protein:0,carbs:0,fat:0});
+async function getDailyTotals(){
+  return (await getFoodLogToday()).reduce((a,e)=>({calories:a.calories+(e.calories||0),protein:a.protein+(e.protein||0),carbs:a.carbs+(e.carbs||0),fat:a.fat+(e.fat||0)}),{calories:0,protein:0,carbs:0,fat:0});
 }
 
 function macroRingHtml(label,current,target,color){
@@ -871,18 +1464,18 @@ function macroRingHtml(label,current,target,color){
   return `<div class="macro-ring-wrap"><div class="macro-ring-svg-wrap"><svg width="68" height="68" viewBox="0 0 68 68"><circle cx="34" cy="34" r="${r}" fill="none" stroke="#2a2a2a" stroke-width="5"/><circle class="ring-arc" cx="34" cy="34" r="${r}" fill="none" stroke="${color}" stroke-width="5" stroke-dasharray="${circ.toFixed(1)}" stroke-dashoffset="${circ.toFixed(1)}" data-target="${offset}" stroke-linecap="round" transform="rotate(-90 34 34)"/></svg><div class="macro-ring-center"><span class="macro-ring-val">${current}</span><span class="macro-ring-unit">${unit}</span></div></div><div class="macro-ring-label">${label}</div></div>`;
 }
 
-function renderMacroRings(){
+async function renderMacroRings(){
   const el=document.getElementById('macroRings');
   if(!el)return;
-  const t=getDailyTotals();
+  const t=await getDailyTotals();
   el.innerHTML=`<div class="macro-rings">${macroRingHtml('Cal',t.calories,2000,'#E82C2C')}${macroRingHtml('Protein',t.protein,150,'#3b82f6')}${macroRingHtml('Carbs',t.carbs,200,'#f59e0b')}${macroRingHtml('Fat',t.fat,65,'#10b981')}</div>`;
   requestAnimationFrame(()=>requestAnimationFrame(()=>{el.querySelectorAll('.ring-arc').forEach(c=>c.style.strokeDashoffset=c.dataset.target);}));
 }
 
-function renderFoodTimeline(){
+async function renderFoodTimeline(){
   const el=document.getElementById('foodTimeline');
   if(!el)return;
-  const entries=getFoodLogToday();
+  const entries=await getFoodLogToday();
   if(!entries.length){el.innerHTML='';return;}
   const rows=entries.slice().reverse().map(e=>{
     const cal=e.calories||0,dot=cal<600?'green':cal<900?'yellow':'red';
@@ -891,24 +1484,35 @@ function renderFoodTimeline(){
   el.innerHTML=`<div class="food-timeline"><h4>Today's meals</h4>${rows}</div>`;
 }
 
-function getSavedMeals(){return JSON.parse(localStorage.getItem('vca_saved_meals')||'[]');}
+async function getSavedMeals(){return _loadSavedMeals();}
 
-function addSavedMeal(){
+async function addSavedMeal(){
   if(!_lastMealForSave)return;
   const {meal,desc}=_lastMealForSave;
-  const meals=getSavedMeals();
-  if(meals.some(m=>m.meal===meal&&m.desc===desc)){return;}
-  meals.unshift({meal,desc});
-  if(meals.length>10)meals.length=10;
-  localStorage.setItem('vca_saved_meals',JSON.stringify(meals));
-  renderSavedMeals();
+  try {
+    const { data: { user } } = await supabaseClient.auth.getUser();
+    if (user) {
+      const meals=await _loadSavedMeals();
+      if(meals.some(m=>m.meal===meal&&m.desc===desc)){return;}
+      const { error } = await supabaseClient.from('saved_meals').insert({
+        user_id:     user.id,
+        meal:        meal,
+        description: desc,
+      });
+      if (error) throw error;
+      _savedMealsCache = undefined;
+    }
+  } catch(e) {
+    console.error('[addSavedMeal] failed to save meal', e);
+  }
+  await renderSavedMeals();
   document.querySelector('.save-meal-btn').textContent='✓ Saved';
 }
 
-function renderSavedMeals(){
+async function renderSavedMeals(){
   const el=document.getElementById('savedMealsSection');
   if(!el)return;
-  const meals=getSavedMeals();
+  const meals=await getSavedMeals();
   if(!meals.length){el.innerHTML='';return;}
   el.innerHTML=`<div class="saved-meals-section"><h4>Saved meals</h4><div id="savedMealBtns"></div></div>`;
   const container=document.getElementById('savedMealBtns');
@@ -922,7 +1526,7 @@ function renderSavedMeals(){
 }
 
 async function quickLogMeal(idx){
-  const meals=getSavedMeals();
+  const meals=await getSavedMeals();
   if(!meals[idx])return;
   const savedMealName=meals[idx].meal||'';
   document.querySelectorAll('.pill[data-group="foodMeal"]').forEach(b=>b.classList.toggle('selected',b.textContent.trim()===savedMealName));
@@ -936,7 +1540,7 @@ async function logFood(){
   if(!desc){alert('Please describe what you ate.');return;}
   _lastMealForSave={meal:meal||'Meal',desc};
 
-  const savedPlan=JSON.parse(localStorage.getItem('vca_plan_context')||'null');
+  const savedPlan=await getPlanContext();
   const planCtx=savedPlan?'\n\nUser\'s active plan goals: '+savedPlan.goal:'';
   const prompt='You are a nutrition analyst and direct coach. The user logged this meal:\n- Meal: '+(meal||'unspecified')+'\n- Description: '+desc+planCtx+'\n\nRespond with EXACTLY this structure. First line must be the DATA line with integer estimates:\n\nDATA:{"calories":0,"protein":0,"carbs":0,"fat":0}\n\n**Estimated calories:** X kcal\n**Macros:** Protein: Xg | Carbs: Xg | Fat: Xg\n**Nutritional quality:** [1-2 sentence honest assessment]\n'+(savedPlan?'**Plan fit:** [1 sentence connecting this meal to their goals]\n':'')+'**Coach:** [2-3 sentence direct coaching reaction — be specific to what was logged, praise what\'s good, flag what to watch, connect to their goals]\n\nReplace DATA values with realistic integer estimates.';
 
@@ -951,16 +1555,16 @@ async function logFood(){
     const dm=text.match(/DATA:(\{[^}]+\})/);
     if(dm){try{macros=JSON.parse(dm[1]);}catch(e){}}
     const displayText=text.replace(/DATA:\{[^}]+\}\n?/,'').trim();
-    saveFoodLogEntry(meal||'Meal',desc,macros);
+    await saveFoodLogEntry(meal||'Meal',desc,macros);
     responseDiv.innerHTML=`<div class="response-card"><h3>&#9825; Nutrition breakdown</h3><div class="body">${renderMarkdown(displayText)}</div><button class="save-meal-btn" onclick="addSavedMeal()">&#128190; Save this meal</button></div>`;
   }catch(e){
     responseDiv.innerHTML='<div class="response-card"><p style="color:#c01f1f">Something went wrong. Please try again.</p></div>';
   }
 
   document.getElementById('foodDesc').value='';
-  renderMacroRings();
-  renderFoodTimeline();
-  renderSavedMeals();
+  await renderMacroRings();
+  await renderFoodTimeline();
+  await renderSavedMeals();
 }
 
 function renderFoodLog(){renderMacroRings();renderFoodTimeline();renderSavedMeals();}
@@ -997,9 +1601,8 @@ document.querySelectorAll('.page.active .card,.page.active .plan-hero').forEach(
 new MutationObserver(_applyFade).observe(document.body,{childList:true,subtree:true});
 
 
-checkSubscription();
+initAuth();
 
 </script>
-<div class="app-footer">For general wellness guidance only. Consult a healthcare professional before starting a new diet or exercise program.</div>
 </body>
 </html>

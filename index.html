@@ -203,9 +203,112 @@ select option{background:#2a2a2a;color:#ffffff;}
 .pd-divider{height:1px;background:#2a2a2a;margin:0;}
 .pd-logout{width:100%;padding:11px 14px;background:none;border:none;color:#888;font-size:13px;font-family:'Inter',sans-serif;text-align:left;cursor:pointer;transition:color 0.18s ease,background 0.18s ease;display:block;}
 .pd-logout:hover{color:#e53e3e;background:#1a1010;}
+/* ── Landing Page ──────────────────────────────────────────────────── */
+#landingPage{font-family:'Inter',-apple-system,sans-serif;background:linear-gradient(to bottom,#0d0d0d 0%,#150808 100%);color:#e8e8e8;min-height:100vh;}
+.lp-hero{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:3rem 1.5rem 2.5rem;text-align:center;max-width:620px;margin:0 auto;}
+.lp-logo{width:52px;height:52px;margin-bottom:1.25rem;}
+.lp-brand{font-family:'Clash Display','Syne',sans-serif;font-size:13px;font-weight:700;color:#666666;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:1.75rem;}
+.lp-h1{font-family:'Clash Display','Syne',sans-serif;font-size:2.1rem;font-weight:800;color:#ffffff;line-height:1.2;letter-spacing:-0.5px;margin:0 0 1rem;}
+.lp-sub{font-size:1rem;color:#888888;margin:0 0 2rem;line-height:1.5;}
+.lp-cta-btn{padding:15px 32px;border-radius:12px;border:none;background:radial-gradient(ellipse at center,#f04040 0%,#E82C2C 70%);color:#fff;font-family:'Clash Display','Syne',sans-serif;font-size:16px;font-weight:600;cursor:pointer;transition:all 0.2s ease;box-shadow:0 3px 14px rgba(229,62,62,0.35);}
+.lp-cta-btn:hover{transform:translateY(-1px);box-shadow:0 5px 20px rgba(229,62,62,0.45);}
+.lp-section{max-width:620px;margin:0 auto;padding:2.5rem 1.5rem;border-top:1px solid #1e1e1e;}
+.lp-h2{font-family:'Clash Display','Syne',sans-serif;font-size:1.3rem;font-weight:700;color:#ffffff;letter-spacing:-0.3px;margin:0 0 1.25rem;}
+.lp-hook{font-family:'Clash Display','Syne',sans-serif;font-size:1.1rem;font-weight:700;color:#ffffff;line-height:1.4;margin:0 0 0.75rem;}
+.lp-body{font-size:14px;color:#888888;line-height:1.7;margin:0;}
+.lp-cards{display:flex;flex-direction:column;gap:0.75rem;}
+.lp-card{background:#1e1e1e;border-radius:16px;border:1px solid #2a2a2a;padding:1.1rem 1.25rem;display:flex;align-items:flex-start;gap:1rem;}
+.lp-emoji{font-size:20px;line-height:1;flex-shrink:0;margin-top:3px;}
+.lp-card h3{font-family:'Clash Display','Syne',sans-serif;font-size:15px;font-weight:700;color:#ffffff;margin:0 0 4px;}
+.lp-card p{font-size:13px;color:#888888;margin:0;line-height:1.5;}
+.lp-steps{display:flex;flex-direction:column;gap:0;}
+.lp-step{display:flex;align-items:flex-start;gap:1rem;background:#1e1e1e;border-radius:14px;border:1px solid #2a2a2a;padding:1rem 1.25rem;}
+.lp-step-num{font-family:'Clash Display','Syne',sans-serif;font-size:1.4rem;font-weight:800;color:#e53e3e;flex-shrink:0;line-height:1;margin-top:1px;}
+.lp-step p{font-size:14px;color:#e8e8e8;margin:0;line-height:1.5;}
+.lp-step-arrow{text-align:center;color:#333333;font-size:18px;padding:4px 0;}
+.lp-pricing{display:flex;flex-direction:column;gap:0.75rem;}
+.lp-tier{background:#1e1e1e;border-radius:16px;border:1px solid #2a2a2a;padding:1.25rem;}
+.lp-tier-pro{border-color:#e53e3e;box-shadow:0 0 0 1px #e53e3e;}
+.lp-tier-badge{display:inline-block;font-family:'Clash Display','Syne',sans-serif;font-size:11px;padding:3px 10px;border-radius:999px;background:#2a1010;color:#e53e3e;font-weight:700;margin-bottom:8px;letter-spacing:0.03em;}
+.lp-tier-name{font-family:'Clash Display','Syne',sans-serif;font-size:12px;font-weight:700;color:#666666;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px;}
+.lp-tier-price{font-family:'Clash Display','Syne',sans-serif;font-size:2.2rem;font-weight:700;color:#ffffff;letter-spacing:-1px;margin-bottom:1rem;line-height:1;}
+.lp-tier-price span{font-size:1rem;font-weight:500;color:#888888;letter-spacing:0;}
+.lp-tier-list{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:8px;}
+.lp-tier-list li{font-size:13px;color:#e8e8e8;padding-left:1.25rem;position:relative;line-height:1.4;}
+.lp-tier-list li::before{content:'✓';position:absolute;left:0;color:#e53e3e;font-weight:700;}
+.lp-cta-final{max-width:620px;margin:0 auto;padding:2.5rem 1.5rem 4rem;text-align:center;border-top:1px solid #1e1e1e;}
+.lp-no-cc{font-size:13px;color:#888888;margin:0.75rem 0 0;}
 </style>
 </head>
 <body>
+<div id="landingPage">
+  <section class="lp-hero">
+    <img src="logo-icon.png" class="lp-logo" alt="Vital Coach AI">
+    <div class="lp-brand">Vital Coach AI</div>
+    <h1 class="lp-h1">The AI that holds you accountable<br>when you can't hold yourself.</h1>
+    <p class="lp-sub">Daily check-ins. Real coaching. No fluff.</p>
+    <button class="lp-cta-btn" onclick="showAuth()">Start for Free</button>
+  </section>
+
+  <section class="lp-section">
+    <p class="lp-hook">Every other app tells you what to do.<br>Vital Coach AI checks if you actually did it.</p>
+    <p class="lp-body">Most habit apps let you off the hook. You log a miss, it resets, you try again tomorrow. Vital Coach AI asks the hard questions — why didn't you? What got in the way? — and coaches you through the gap between intention and action.</p>
+  </section>
+
+  <section class="lp-section">
+    <h2 class="lp-h2">Everything in one place</h2>
+    <div class="lp-cards">
+      <div class="lp-card"><span class="lp-emoji">♡</span><div><h3>Daily Check-in</h3><p>Rate your mood, energy, and habits — then get real AI feedback on your day.</p></div></div>
+      <div class="lp-card"><span class="lp-emoji">✎</span><div><h3>Build My Plan</h3><p>Set goals across sleep, fitness, nutrition, and mindset — all tracked together.</p></div></div>
+      <div class="lp-card"><span class="lp-emoji">⚡</span><div><h3>Get Your Life Together</h3><p>AI coaching sessions that dig into what's actually stopping you.</p></div></div>
+      <div class="lp-card"><span class="lp-emoji">🍎</span><div><h3>Food Log</h3><p>Log meals in plain English and track macros without the spreadsheet.</p></div></div>
+    </div>
+  </section>
+
+  <section class="lp-section">
+    <h2 class="lp-h2">How it works</h2>
+    <div class="lp-steps">
+      <div class="lp-step"><span class="lp-step-num">1</span><p>Build your plan across sleep, fitness, food, and mindset.</p></div>
+      <div class="lp-step-arrow">↓</div>
+      <div class="lp-step"><span class="lp-step-num">2</span><p>Check in daily — mood, energy, habits, wins.</p></div>
+      <div class="lp-step-arrow">↓</div>
+      <div class="lp-step"><span class="lp-step-num">3</span><p>Get coached on what's actually holding you back.</p></div>
+    </div>
+  </section>
+
+  <section class="lp-section">
+    <h2 class="lp-h2">Simple pricing</h2>
+    <div class="lp-pricing">
+      <div class="lp-tier">
+        <div class="lp-tier-name">Free</div>
+        <div class="lp-tier-price">$0</div>
+        <ul class="lp-tier-list">
+          <li>Build My Plan (full access)</li>
+          <li>Limited Daily Check-in AI responses</li>
+          <li>Limited Food Log AI analysis</li>
+          <li>Limited Get Your Life Together sessions</li>
+        </ul>
+      </div>
+      <div class="lp-tier lp-tier-pro">
+        <div class="lp-tier-badge">Pro</div>
+        <div class="lp-tier-name">Pro</div>
+        <div class="lp-tier-price">$9<span>/mo</span></div>
+        <ul class="lp-tier-list">
+          <li>Everything in Free</li>
+          <li>Unlimited Daily Check-in responses</li>
+          <li>Unlimited Food Log analysis</li>
+          <li>Unlimited coaching sessions</li>
+          <li>Plan connects across all tabs</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="lp-cta-final">
+    <button class="lp-cta-btn" onclick="showAuth()">Start for Free</button>
+    <p class="lp-no-cc">No credit card required.</p>
+  </section>
+</div>
 <div id="auth-screen" style="display:none;">
   <div class="auth-card">
     <div class="auth-logo">
@@ -630,12 +733,14 @@ async function _loadRcCheckins() {
 let authMode = 'login';
 
 function showAuth() {
+  document.getElementById('landingPage').style.display = 'none';
   document.getElementById('auth-screen').style.display = 'flex';
   document.getElementById('app').style.display = 'none';
   document.getElementById('profile-wrap').style.display = 'none';
 }
 
 function showApp() {
+  document.getElementById('landingPage').style.display = 'none';
   document.getElementById('auth-screen').style.display = 'none';
   document.getElementById('app').style.display = '';
   document.getElementById('profile-wrap').style.display = 'block';
@@ -920,8 +1025,6 @@ async function initAuth() {
   if (session) {
     migrateFromLocalStorage(session.user.id); // fire-and-forget
     showApp();
-  } else {
-    showAuth();
   }
 
   supabaseClient.auth.onAuthStateChange((_event, session) => {
@@ -929,7 +1032,7 @@ async function initAuth() {
       migrateFromLocalStorage(session.user.id); // fire-and-forget
       showApp();
       if (isPro) { renderPlanTab(); } else { checkSubscription(); }
-    } else {
+    } else if (_event !== 'INITIAL_SESSION') {
       showAuth();
     }
   });

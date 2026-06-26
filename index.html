@@ -189,7 +189,11 @@ select option{background:#2a2a2a;color:#ffffff;}
 .auth-msg{border-radius:10px;padding:10px 12px;font-size:13px;margin-bottom:0.75rem;display:none;}
 .auth-msg.error{background:#2a1010;border:1px solid #e53e3e;color:#e53e3e;}
 .auth-msg.success{background:#0a1a0a;border:1px solid #2a6a2a;color:#4aaa6a;}
-.profile-wrap{position:relative;margin-left:auto;flex-shrink:0;display:none;}
+.profile-wrap{position:relative;margin-left:8px;flex-shrink:0;display:none;}
+.schedule-btn-wrap{margin-left:auto;flex-shrink:0;display:none;}
+.schedule-btn{width:48px;height:48px;border-radius:50%;background:#2a2a2a;border:1.5px solid #333;color:#888;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:border-color 0.18s ease,color 0.18s ease;padding:0;}
+.schedule-btn:hover,.schedule-btn.open{border-color:#e53e3e;color:#e53e3e;}
+.schedule-btn svg{pointer-events:none;}
 .profile-avatar{width:48px;height:48px;border-radius:50%;background:#2a2a2a;border:1.5px solid #333;color:#ccc;font-family:'Clash Display','Syne',sans-serif;font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:border-color 0.18s ease,color 0.18s ease;padding:0;line-height:1;overflow:hidden;}
 .profile-avatar:hover,.profile-avatar.open{border-color:#e53e3e;color:#fff;}
 .profile-avatar-img{width:40px;height:40px;object-fit:contain;pointer-events:none;display:block;}
@@ -203,6 +207,63 @@ select option{background:#2a2a2a;color:#ffffff;}
 .pd-divider{height:1px;background:#2a2a2a;margin:0;}
 .pd-logout{width:100%;padding:11px 14px;background:none;border:none;color:#888;font-size:13px;font-family:'Inter',sans-serif;text-align:left;cursor:pointer;transition:color 0.18s ease,background 0.18s ease;display:block;}
 .pd-logout:hover{color:#e53e3e;background:#1a1010;}
+/* ── Schedule Drawer ─────────────────────────────────────────────── */
+.schedule-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:290;opacity:0;pointer-events:none;transition:opacity 0.25s ease;}
+.schedule-overlay.active{opacity:1;pointer-events:all;}
+.schedule-drawer{position:fixed;top:0;right:0;height:100%;width:85vw;max-width:420px;background:#0d0d0d;border-left:1px solid #1e1e1e;z-index:300;display:flex;flex-direction:column;transform:translateX(100%);transition:transform 0.3s cubic-bezier(0.22,1,0.36,1);}
+.schedule-drawer.open{transform:translateX(0);}
+.schedule-drawer-header{display:flex;align-items:center;justify-content:space-between;padding:18px 18px 14px;border-bottom:1px solid #1e1e1e;flex-shrink:0;}
+.schedule-drawer-title{font-family:'Clash Display','Syne',sans-serif;font-size:1.15rem;font-weight:700;color:#fff;letter-spacing:-0.3px;}
+.schedule-close{width:36px;height:36px;border-radius:50%;background:#1e1e1e;border:1px solid #2a2a2a;color:#888;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:color 0.18s ease,border-color 0.18s ease;padding:0;flex-shrink:0;}
+.schedule-close:hover{color:#fff;border-color:#444;}
+.schedule-body{flex:1;overflow-y:auto;padding:16px;}
+.timeframe-toggle{display:flex;gap:6px;margin-bottom:18px;}
+.tf-btn{flex:1;padding:8px 4px;border-radius:8px;background:#1e1e1e;border:1.5px solid #2a2a2a;color:#666;font-family:'Clash Display','Syne',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:all 0.18s ease;}
+.tf-btn.active{background:#1a0808;border-color:#e53e3e;color:#fff;}
+.tf-btn:hover:not(.active){border-color:#444;color:#aaa;}
+.schedule-day-placeholder{text-align:center;color:#444;font-size:14px;padding:48px 0;}
+.sched-day-row{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:#161616;border-radius:10px;margin-bottom:6px;border:1px solid #1e1e1e;cursor:pointer;transition:border-color 0.18s ease,background 0.18s ease;}
+.sched-day-row:hover{border-color:#333;background:#1a1a1a;}
+.sched-day-row.is-today{border-color:#e53e3e;background:#180a0a;}
+.sched-day-row.is-past{opacity:0.5;}
+.sched-day-label{font-family:'Clash Display','Syne',sans-serif;font-size:13px;font-weight:700;color:#fff;display:flex;align-items:baseline;gap:5px;}
+.sched-day-date{font-family:'Inter',sans-serif;font-weight:400;color:#555;font-size:12px;}
+.sched-today-pip{display:inline-block;width:5px;height:5px;border-radius:50%;background:#e53e3e;margin-left:4px;vertical-align:middle;}
+.sched-workout-type{font-size:12px;color:#888;margin-top:3px;}
+.sched-workout-type.is-rest{color:#444;}
+.sched-day-right{text-align:right;flex-shrink:0;}
+.sched-macro{font-size:12px;color:#ccc;font-weight:600;}
+.sched-macro-sub{font-size:11px;color:#555;margin-top:2px;}
+.sched-day-row.expanded{border-color:#333;background:#161616;}
+.sched-day-chevron{margin-left:8px;color:#555;font-size:10px;transition:transform 0.2s ease;display:inline-block;}
+.sched-day-row.expanded .sched-day-chevron{transform:rotate(180deg);}
+.sched-detail{background:#111;border:1px solid #1e1e1e;border-top:none;border-radius:0 0 10px 10px;margin-top:-6px;margin-bottom:6px;padding:14px;}
+.sched-detail-section{margin-bottom:14px;}
+.sched-detail-section:last-child{margin-bottom:0;}
+.sched-detail-label{font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#555;margin-bottom:6px;}
+.sched-detail-heading{font-family:'Clash Display','Syne',sans-serif;font-size:14px;font-weight:700;color:#fff;margin-bottom:4px;}
+.sched-detail-body{font-size:13px;color:#999;line-height:1.55;}
+.sched-macro-row{display:flex;gap:10px;flex-wrap:wrap;}
+.sched-macro-chip{background:#1e1e1e;border:1px solid #2a2a2a;border-radius:8px;padding:6px 10px;font-size:12px;color:#ccc;}
+.sched-macro-chip span{display:block;font-size:10px;color:#555;margin-top:1px;}
+.sched-food-entry{padding:7px 0;border-bottom:1px solid #1a1a1a;font-size:12px;color:#888;display:flex;justify-content:space-between;align-items:baseline;gap:8px;}
+.sched-food-entry:last-child{border-bottom:none;}
+.sched-food-name{color:#bbb;flex:1;}
+.sched-food-cals{color:#666;flex-shrink:0;}
+.sched-empty-log{font-size:12px;color:#444;font-style:italic;}
+.schedule-chat{flex-shrink:0;border-top:1px solid #1e1e1e;background:#0d0d0d;padding:12px 14px 16px;}
+.schedule-chat-label{font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#555;margin-bottom:8px;}
+.schedule-chat-history{max-height:180px;overflow-y:auto;margin-bottom:10px;display:flex;flex-direction:column;gap:7px;}
+.schedule-chat-msg{font-size:13px;line-height:1.5;padding:8px 10px;border-radius:8px;word-break:break-word;}
+.schedule-chat-msg.user{background:#1a0808;border:1px solid #2a1010;color:#ccc;align-self:flex-end;max-width:85%;}
+.schedule-chat-msg.bot{background:#161616;border:1px solid #222;color:#bbb;align-self:flex-start;max-width:92%;}
+.schedule-chat-input-row{display:flex;gap:8px;align-items:flex-end;}
+.schedule-chat-input{flex:1;background:#161616;border:1.5px solid #2a2a2a;border-radius:10px;padding:9px 12px;color:#fff;font-size:13px;font-family:'Inter',sans-serif;resize:none;outline:none;line-height:1.4;overflow-y:hidden;transition:border-color 0.18s ease;}
+.schedule-chat-input::placeholder{color:#444;}
+.schedule-chat-input:focus{border-color:#444;}
+.schedule-chat-send{width:36px;height:36px;border-radius:50%;background:#e53e3e;border:none;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:opacity 0.18s ease;}
+.schedule-chat-send:hover{opacity:0.85;}
+.schedule-chat-send:disabled{opacity:0.35;cursor:not-allowed;}
 /* ── Landing Page ──────────────────────────────────────────────────── */
 #landingPage{font-family:'Inter',-apple-system,sans-serif;background:linear-gradient(to bottom,#0d0d0d 0%,#150808 100%);color:#e8e8e8;min-height:100vh;}
 .lp-hero{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:3rem 1.5rem 2.5rem;text-align:center;max-width:620px;margin:0 auto;}
@@ -337,6 +398,11 @@ select option{background:#2a2a2a;color:#ffffff;}
     <div>
       <h1>Vital Coach AI</h1>
       <p>The AI that holds you accountable when you can't hold yourself.</p>
+    </div>
+    <div class="schedule-btn-wrap" id="schedule-btn-wrap">
+      <button class="schedule-btn" id="schedule-btn" onclick="openScheduleDrawer()" aria-label="My Schedule">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      </button>
     </div>
     <div class="profile-wrap" id="profile-wrap">
       <button class="profile-avatar" id="profile-avatar" onclick="toggleProfileDropdown()" aria-label="Account menu"><img src="logo-icon.png" class="profile-avatar-img" alt=""></button>
@@ -529,6 +595,8 @@ select option{background:#2a2a2a;color:#ffffff;}
         <button class="pill multi" onclick="togglePill(this)">Kosher</button>
         <button class="pill multi" onclick="togglePill(this)">Keto / low-carb</button>
         <button class="pill multi" onclick="togglePill(this)">High-protein</button>
+        <button class="pill multi" onclick="togglePill(this)">Primal</button>
+        <button class="pill multi" onclick="togglePill(this)">Carnivore</button>
       </div>
     </div>
     <div class="section">
@@ -737,6 +805,7 @@ function showAuth() {
   document.getElementById('auth-screen').style.display = 'flex';
   document.getElementById('app').style.display = 'none';
   document.getElementById('profile-wrap').style.display = 'none';
+  document.getElementById('schedule-btn-wrap').style.display = 'none';
 }
 
 function showApp() {
@@ -744,6 +813,7 @@ function showApp() {
   document.getElementById('auth-screen').style.display = 'none';
   document.getElementById('app').style.display = '';
   document.getElementById('profile-wrap').style.display = 'block';
+  document.getElementById('schedule-btn-wrap').style.display = 'block';
 }
 
 function toggleAuthMode() {
@@ -1128,11 +1198,16 @@ async function generatePlan(){
   const activity=document.getElementById('activity').value;
   const conditions=document.getElementById('conditions').value.trim();
   const extra=document.getElementById('extra').value.trim();
-  const diet=getSelectedMulti().filter(s=>['Vegetarian','Vegan','Gluten-free','Dairy-free','Halal','Kosher','Keto / low-carb','High-protein'].includes(s));
+  const diet=getSelectedMulti().filter(s=>['Vegetarian','Vegan','Gluten-free','Dairy-free','Halal','Kosher','Keto / low-carb','High-protein','Primal','Carnivore'].includes(s));
   const goalsStr=goals.join(', ');
   const workouts=getSelectedWorkouts();
   const workoutStr=workouts.length?workouts.join(', '):'not specified';
-  const prompt='You are an expert fitness and nutrition coach at Vital Coach AI. Create a single cohesive personalized plan that addresses ALL of the user\'s goals together:\n\n- Age: '+(age||'?')+', Sex: '+(sex||'?')+'\n- Height: '+(height||'?')+', Weight: '+(weight||'?')+'lbs\n- Activity: '+(activity||'?')+'\n- Goals: '+goalsStr+'\n- Workout preference: '+workoutStr+'\n- Days/week: '+(days||'?')+'\n- Diet: '+(diet.length?diet.join(', '):'none')+'\n- Conditions: '+(conditions||'none')+'\n- Notes: '+(extra||'none')+'\n\nProvide one integrated plan:\n1. **Weekly workout routine** with specific exercises, sets/reps — structured to advance all goals simultaneously, using the specified workout locations/equipment\n2. **Sample daily diet plan** with meals and portions\n3. **Three key tips** personalized to their combined goals\nEnd with a short motivational note.';
+  const dietNotes=[];
+  if(diet.includes('Carnivore'))dietNotes.push('Carnivore: zero-carb, animal products only (meat, fish, eggs, some dairy) — no plant foods whatsoever. Do not suggest any vegetables, fruits, grains, legumes, nuts, or seeds.');
+  if(diet.includes('Primal'))dietNotes.push('Primal: no grains, legumes, or processed foods. Whole/minimally processed foods only. Some dairy is allowed. Similar to paleo but less restrictive. Do not suggest grains, bread, pasta, rice, beans, or processed foods.');
+  const dietStr=diet.length?diet.join(', '):'none';
+  const dietContext=dietNotes.length?'\n- Diet rules (strictly follow): '+dietNotes.join(' '):'';
+  const prompt='You are an expert fitness and nutrition coach at Vital Coach AI. Create a single cohesive personalized plan that addresses ALL of the user\'s goals together:\n\n- Age: '+(age||'?')+', Sex: '+(sex||'?')+'\n- Height: '+(height||'?')+', Weight: '+(weight||'?')+'lbs\n- Activity: '+(activity||'?')+'\n- Goals: '+goalsStr+'\n- Workout preference: '+workoutStr+'\n- Days/week: '+(days||'?')+'\n- Diet: '+dietStr+dietContext+'\n- Conditions: '+(conditions||'none')+'\n- Notes: '+(extra||'none')+'\n\nProvide one integrated plan:\n1. **Weekly workout routine** with specific exercises, sets/reps — structured to advance all goals simultaneously, using the specified workout locations/equipment\n2. **Sample daily diet plan** with meals and portions\n3. **Three key tips** personalized to their combined goals\nEnd with a short motivational note.';
   await callClaude(prompt,'planResponse','Your personalized plan');
   const planData={goal:goalsStr,goals,height,weight,sex,activity,workoutPref:workoutStr,daysPerWeek:days,diet,savedAt:new Date().toISOString()};
   try {
@@ -1377,6 +1452,7 @@ async function renderRealityCheck() {
           <div class="rc-btn-grid">
             <button class="rc-btn" data-group="rcGoal" data-val="Lose weight" onclick="rcOnboardSelect(this,'rcGoal')">Lose weight</button>
             <button class="rc-btn" data-group="rcGoal" data-val="Build muscle" onclick="rcOnboardSelect(this,'rcGoal')">Build muscle</button>
+            <button class="rc-btn" data-group="rcGoal" data-val="Gain weight" onclick="rcOnboardSelect(this,'rcGoal')">Gain weight</button>
             <button class="rc-btn" data-group="rcGoal" data-val="Get active" onclick="rcOnboardSelect(this,'rcGoal')">Get active</button>
             <button class="rc-btn" data-group="rcGoal" data-val="All of the above" onclick="rcOnboardSelect(this,'rcGoal')">All of the above</button>
           </div>
@@ -1510,7 +1586,8 @@ Instructions:
 - If they did well: acknowledge it briefly (1 sentence), then push them harder for tomorrow.
 - If they offered an excuse: address it head-on.
 - Always close with one concrete, specific action they can take RIGHT NOW or first thing tomorrow.
-- Keep it to 3-4 sentences. No bullet points. No fluff.`;
+- Keep it to 3-4 sentences. No bullet points. No fluff.
+- If the goal is "Gain weight": coaching must focus on caloric surplus, nutrient-dense whole foods, meal frequency, and building appetite and consistency. "Eating on track" means hitting calorie and protein targets — do NOT frame food as something to restrict or control. This is distinct from building muscle; the user may not be athletic. Coach accordingly.`;
 
   await callClaude(prompt, 'rcResponse', 'Get real');
 
@@ -1707,5 +1784,422 @@ new MutationObserver(_applyFade).observe(document.body,{childList:true,subtree:t
 initAuth();
 
 </script>
+
+<!-- ── Schedule Drawer ──────────────────────────────────────────────────── -->
+<div class="schedule-overlay" id="schedule-overlay" onclick="closeScheduleDrawer()"></div>
+<div class="schedule-drawer" id="schedule-drawer" role="dialog" aria-label="My Schedule">
+  <div class="schedule-drawer-header">
+    <span class="schedule-drawer-title">My Schedule</span>
+    <button class="schedule-close" onclick="closeScheduleDrawer()" aria-label="Close schedule">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+  <div class="schedule-body">
+    <div class="timeframe-toggle">
+      <button class="tf-btn active" onclick="setScheduleTimeframe('1W',this)">1 Week</button>
+      <button class="tf-btn" onclick="setScheduleTimeframe('2W',this)">2 Weeks</button>
+      <button class="tf-btn" onclick="setScheduleTimeframe('1M',this)">1 Month</button>
+    </div>
+    <div id="schedule-day-list" class="schedule-day-placeholder">
+      Your schedule will appear here.
+    </div>
+  </div>
+  <div class="schedule-chat">
+    <div class="schedule-chat-label">Have Something Coming Up? Talk to Vital.</div>
+    <div class="schedule-chat-history" id="schedule-chat-history"></div>
+    <div class="schedule-chat-input-row">
+      <textarea class="schedule-chat-input" id="schedule-chat-input" placeholder="e.g. I'm traveling Wednesday…" rows="1"></textarea>
+      <button class="schedule-chat-send" id="schedule-chat-send" onclick="sendScheduleMessage()" aria-label="Send">
+        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── Schedule Drawer ──────────────────────────────────────────────────────────
+let scheduleTimeframe = '1W';
+let _scheduleCache = null; // array of day objects once loaded/generated
+
+function openScheduleDrawer() {
+  document.getElementById('schedule-overlay').classList.add('active');
+  document.getElementById('schedule-drawer').classList.add('open');
+  document.getElementById('schedule-btn').classList.add('open');
+  const dropdown = document.getElementById('profile-dropdown');
+  if (dropdown && dropdown.style.display !== 'none') toggleProfileDropdown();
+  loadOrGenerateSchedule();
+}
+
+function closeScheduleDrawer() {
+  document.getElementById('schedule-overlay').classList.remove('active');
+  document.getElementById('schedule-drawer').classList.remove('open');
+  document.getElementById('schedule-btn').classList.remove('open');
+}
+
+function setScheduleTimeframe(tf, btn) {
+  scheduleTimeframe = tf;
+  document.querySelectorAll('.tf-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  if (_scheduleCache) renderScheduleDayList(_scheduleCache);
+}
+
+function scheduleWeekStart() {
+  const d = new Date();
+  const dow = d.getDay();
+  d.setDate(d.getDate() + (dow === 0 ? -6 : 1 - dow));
+  return d.toISOString().slice(0, 10);
+}
+
+function formatScheduleDate(dateStr) {
+  const d = new Date(dateStr + 'T00:00:00');
+  return (d.getMonth() + 1) + '/' + d.getDate();
+}
+
+async function loadOrGenerateSchedule() {
+  if (_scheduleCache) { renderScheduleDayList(_scheduleCache); return; }
+
+  const list = document.getElementById('schedule-day-list');
+  list.className = 'schedule-day-placeholder';
+  list.innerHTML = '<div class="loading-dots"><span></span><span></span><span></span></div><p style="font-size:13px;color:#888;margin-top:10px">Building your schedule…</p>';
+
+  try {
+    const { data: { user } } = await supabaseClient.auth.getUser();
+    if (!user) {
+      list.innerHTML = '<p style="color:#666;font-size:14px;">Sign in to view your schedule.</p>';
+      return;
+    }
+
+    const weekStart = scheduleWeekStart();
+    const { data, error } = await supabaseClient
+      .from('schedule')
+      .select('schedule_data')
+      .eq('user_id', user.id)
+      .eq('week_start', weekStart)
+      .maybeSingle();
+    if (error) throw error;
+
+    if (data && Array.isArray(data.schedule_data) && data.schedule_data.length >= 7) {
+      _scheduleCache = data.schedule_data;
+      renderScheduleDayList(_scheduleCache);
+      return;
+    }
+
+    const planCtx = await getPlanContext();
+    if (!planCtx) {
+      list.className = 'schedule-day-placeholder';
+      list.innerHTML = '<p style="color:#666;font-size:14px;">Build your plan first — then your schedule will generate automatically.</p>';
+      return;
+    }
+
+    await generateSchedule(planCtx, weekStart, user.id);
+  } catch(e) {
+    console.error('[loadOrGenerateSchedule]', e);
+    const list = document.getElementById('schedule-day-list');
+    list.className = 'schedule-day-placeholder';
+    list.innerHTML = '<p style="color:#c01f1f;font-size:14px;">Something went wrong. Please try again.</p>';
+  }
+}
+
+async function generateSchedule(planCtx, weekStart, userId) {
+  const dietStr = planCtx.diet && planCtx.diet.length ? planCtx.diet.join(', ') : 'no restrictions';
+  const prompt = `You are a fitness and nutrition coach. Generate a 7-day schedule starting from ${weekStart}.
+
+User plan:
+- Goal: ${planCtx.goal}
+- Trains ${planCtx.daysPerWeek} days/week (${planCtx.workoutPref})
+- Diet: ${dietStr}
+- Height: ${planCtx.height}, Weight: ${planCtx.weight}lbs
+
+Return ONLY a valid JSON array of exactly 7 objects. No markdown, no explanation — raw JSON only. Each object:
+{"date":"YYYY-MM-DD","workout_type":"Push Day","workout_details":"Max 2 sentences.","meal_targets":{"calories":2200,"protein":160,"carbs":220,"fat":75},"notes":"One sentence."}
+
+Use "Rest" for rest days. Follow a logical split for their days/week. Lower calories on rest days.`;
+
+  const res = await fetch('/.netlify/functions/claude-proxy', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 2000,
+      messages: [{ role: 'user', content: prompt }]
+    })
+  });
+  const data = await res.json();
+  const text = (data.content?.map(c => c.text || '').join('') || '').trim();
+  const cleaned = text.replace(/^```json?\s*/i, '').replace(/\s*```$/i, '');
+  const days = JSON.parse(cleaned);
+  if (!Array.isArray(days) || days.length < 7) throw new Error('Invalid schedule from AI');
+
+  _scheduleCache = days;
+  await supabaseClient.from('schedule').upsert({
+    user_id: userId,
+    week_start: weekStart,
+    schedule_data: days,
+    updated_at: new Date().toISOString()
+  }, { onConflict: 'user_id,week_start' });
+
+  renderScheduleDayList(days);
+}
+
+function renderScheduleDayList(allDays) {
+  const list = document.getElementById('schedule-day-list');
+  const counts = { '1W': 7, '2W': 14, '1M': 30 };
+  const count = counts[scheduleTimeframe] || 7;
+  const days = allDays.slice(0, count);
+  const today = todayStr();
+
+  list.className = '';
+  list.innerHTML = days.map((day, i) => {
+    const isToday = day.date === today;
+    const isPast = day.date < today;
+    const isRest = day.workout_type === 'Rest';
+    const m = day.meal_targets || {};
+    return `<div class="sched-day-row${isToday ? ' is-today' : ''}${isPast ? ' is-past' : ''}" onclick="toggleDayDetail(this,${i})" data-date="${day.date}" data-idx="${i}">
+      <div>
+        <div class="sched-day-label">${new Date(day.date+'T00:00:00').toLocaleDateString('en-US',{weekday:'short'})} <span class="sched-day-date">${formatScheduleDate(day.date)}</span>${isToday ? '<span class="sched-today-pip"></span>' : ''}<span class="sched-day-chevron">▼</span></div>
+        <div class="sched-workout-type${isRest ? ' is-rest' : ''}">${day.workout_type}</div>
+      </div>
+      <div class="sched-day-right">
+        <div class="sched-macro">${m.calories || '—'} cal</div>
+        <div class="sched-macro-sub">${m.protein || '—'}g protein</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+const _foodLogByDate = new Map();
+
+async function fetchFoodLogForDate(date) {
+  if (_foodLogByDate.has(date)) return _foodLogByDate.get(date);
+  try {
+    const { data: { user } } = await supabaseClient.auth.getUser();
+    if (!user) return [];
+    const { data, error } = await supabaseClient
+      .from('food_log')
+      .select('meal, description, calories, protein, carbs, fat')
+      .eq('user_id', user.id)
+      .eq('date', date)
+      .order('logged_at', { ascending: true });
+    if (error) throw error;
+    const entries = (data || []).map(r => ({
+      meal: r.meal, desc: r.description,
+      calories: r.calories, protein: r.protein, carbs: r.carbs, fat: r.fat,
+    }));
+    _foodLogByDate.set(date, entries);
+    return entries;
+  } catch(e) {
+    console.error('[fetchFoodLogForDate]', e);
+    return [];
+  }
+}
+
+async function toggleDayDetail(row, idx) {
+  const existing = row.nextElementSibling;
+  if (existing && existing.classList.contains('sched-detail')) {
+    existing.remove();
+    row.classList.remove('expanded');
+    return;
+  }
+  // Collapse any other open detail
+  document.querySelectorAll('.sched-detail').forEach(el => el.remove());
+  document.querySelectorAll('.sched-day-row.expanded').forEach(el => el.classList.remove('expanded'));
+
+  row.classList.add('expanded');
+  const day = _scheduleCache[idx];
+  const m = day.meal_targets || {};
+  const today = todayStr();
+  const isPast = day.date < today;
+
+  const detail = document.createElement('div');
+  detail.className = 'sched-detail';
+
+  // Workout section
+  const isRest = day.workout_type === 'Rest';
+  detail.innerHTML = `
+    <div class="sched-detail-section">
+      <div class="sched-detail-label">Workout</div>
+      <div class="sched-detail-heading">${day.workout_type}</div>
+      ${!isRest ? `<div class="sched-detail-body">${day.workout_details || ''}</div>` : ''}
+    </div>
+    <div class="sched-detail-section">
+      <div class="sched-detail-label">Meal Targets</div>
+      <div class="sched-macro-row">
+        <div class="sched-macro-chip">${m.calories || '—'}<span>calories</span></div>
+        <div class="sched-macro-chip">${m.protein || '—'}g<span>protein</span></div>
+        <div class="sched-macro-chip">${m.carbs || '—'}g<span>carbs</span></div>
+        <div class="sched-macro-chip">${m.fat || '—'}g<span>fat</span></div>
+      </div>
+    </div>
+    ${isPast ? `<div class="sched-detail-section" id="sched-food-log-${idx}">
+      <div class="sched-detail-label">Food Log</div>
+      <div class="sched-empty-log">Loading…</div>
+    </div>` : ''}
+  `;
+
+  row.after(detail);
+
+  if (isPast) {
+    const entries = await fetchFoodLogForDate(day.date);
+    const foodSection = document.getElementById(`sched-food-log-${idx}`);
+    if (foodSection) {
+      if (entries.length === 0) {
+        foodSection.innerHTML = `<div class="sched-detail-label">Food Log</div><div class="sched-empty-log">Nothing logged for this day.</div>`;
+      } else {
+        const total = entries.reduce((s, e) => s + (e.calories || 0), 0);
+        foodSection.innerHTML = `<div class="sched-detail-label">Food Log</div>
+          ${entries.map(e => `<div class="sched-food-entry"><span class="sched-food-name">${e.meal ? `<strong>${e.meal}</strong> · ` : ''}${e.desc || ''}</span><span class="sched-food-cals">${e.calories || 0} cal</span></div>`).join('')}
+          <div class="sched-food-entry" style="margin-top:4px;border-top:1px solid #222;padding-top:7px;border-bottom:none;"><span class="sched-food-name" style="color:#666;">Total</span><span class="sched-food-cals" style="color:#aaa;">${total} cal</span></div>`;
+      }
+    }
+  }
+}
+
+// ── Schedule Chatbot ─────────────────────────────────────────────────────────
+let _scheduleChatHistory = [];
+
+function renderScheduleChat() {
+  const hist = document.getElementById('schedule-chat-history');
+  if (!hist) return;
+  hist.innerHTML = _scheduleChatHistory.map(m =>
+    `<div class="schedule-chat-msg ${m.role}">${m.text}</div>`
+  ).join('');
+  hist.scrollTop = hist.scrollHeight;
+}
+
+async function sendScheduleMessage() {
+  const input = document.getElementById('schedule-chat-input');
+  const sendBtn = document.getElementById('schedule-chat-send');
+  const text = input.value.trim();
+  if (!text) return;
+
+  if (!_scheduleCache) {
+    _scheduleChatHistory.push({ role: 'bot', text: 'Generate your schedule first by opening this drawer.' });
+    renderScheduleChat();
+    return;
+  }
+
+  input.value = '';
+  input.style.height = '';
+  sendBtn.disabled = true;
+
+  _scheduleChatHistory.push({ role: 'user', text });
+  _scheduleChatHistory.push({ role: 'bot', text: '…' });
+  renderScheduleChat();
+
+  try {
+    const planCtx = await getPlanContext();
+    const planStr = planCtx
+      ? `Goal: ${planCtx.goal}, ${planCtx.daysPerWeek} days/week (${planCtx.workoutPref}), diet: ${planCtx.diet?.join(', ') || 'none'}`
+      : 'No plan on file';
+
+    const prompt = `You are Vital, a fitness scheduling assistant. The user wants to adjust their schedule.
+
+User's plan: ${planStr}
+Current schedule (JSON): ${JSON.stringify(_scheduleCache)}
+
+User says: "${text}"
+
+Respond with these three labeled sections:
+
+[REPLY]
+Short, action-oriented confirmation (2-3 sentences max). If nothing needs changing, just reply conversationally.
+
+[SCHEDULE_UPDATE]
+If any days need changing, output a JSON array of ONLY the changed day objects with ALL fields intact (date, workout_type, workout_details, meal_targets, notes). If no schedule change needed, output: null
+
+[PLAN_UPDATE]
+If this change affects ongoing plan preferences (e.g. new diet, different days/week), output a JSON object with only the changed keys: goal, workout_pref, days_per_week, diet (array). If no plan change, output: null`;
+
+    const res = await fetch('/.netlify/functions/claude-proxy', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 1500,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+    const data = await res.json();
+    const raw = (data.content?.map(c => c.text || '').join('') || '').trim();
+
+    const replyMatch   = raw.match(/\[REPLY\]([\s\S]*?)(?=\[SCHEDULE_UPDATE\]|\[PLAN_UPDATE\]|$)/i);
+    const schedMatch   = raw.match(/\[SCHEDULE_UPDATE\]([\s\S]*?)(?=\[PLAN_UPDATE\]|$)/i);
+    const planMatch    = raw.match(/\[PLAN_UPDATE\]([\s\S]*?)$/i);
+
+    const reply = replyMatch ? replyMatch[1].trim() : 'Done.';
+    _scheduleChatHistory[_scheduleChatHistory.length - 1] = { role: 'bot', text: reply };
+    renderScheduleChat();
+
+    // Apply schedule changes
+    if (schedMatch) {
+      const raw2 = schedMatch[1].trim().replace(/^```json?\s*/i, '').replace(/\s*```$/i, '');
+      if (raw2 && raw2.toLowerCase() !== 'null') {
+        const changedDays = JSON.parse(raw2);
+        if (Array.isArray(changedDays) && changedDays.length > 0) {
+          changedDays.forEach(changed => {
+            const i = _scheduleCache.findIndex(d => d.date === changed.date);
+            if (i !== -1) _scheduleCache[i] = changed;
+          });
+          renderScheduleDayList(_scheduleCache);
+          const { data: { user } } = await supabaseClient.auth.getUser();
+          if (user) {
+            await supabaseClient.from('schedule').upsert({
+              user_id: user.id,
+              week_start: scheduleWeekStart(),
+              schedule_data: _scheduleCache,
+              updated_at: new Date().toISOString()
+            }, { onConflict: 'user_id,week_start' });
+          }
+        }
+      }
+    }
+
+    // Apply plan_context changes
+    if (planMatch) {
+      const raw3 = planMatch[1].trim().replace(/^```json?\s*/i, '').replace(/\s*```$/i, '');
+      if (raw3 && raw3.toLowerCase() !== 'null') {
+        const changes = JSON.parse(raw3);
+        if (changes && typeof changes === 'object') {
+          const { data: { user } } = await supabaseClient.auth.getUser();
+          if (user) {
+            const row = { user_id: user.id };
+            if (changes.goal         !== undefined) row.goal          = changes.goal;
+            if (changes.workout_pref !== undefined) row.workout_pref  = changes.workout_pref;
+            if (changes.days_per_week !== undefined) row.days_per_week = changes.days_per_week;
+            if (changes.diet         !== undefined) row.diet          = changes.diet;
+            await supabaseClient.from('plan_context').upsert(row, { onConflict: 'user_id' });
+            _planContextCache = undefined;
+          }
+        }
+      }
+    }
+  } catch(e) {
+    console.error('[sendScheduleMessage]', e);
+    _scheduleChatHistory[_scheduleChatHistory.length - 1] = { role: 'bot', text: 'Something went wrong. Please try again.' };
+    renderScheduleChat();
+  } finally {
+    sendBtn.disabled = false;
+  }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  const input = document.getElementById('schedule-chat-input');
+  if (!input) return;
+  input.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendScheduleMessage(); }
+  });
+  input.addEventListener('input', function() {
+    this.style.height = 'auto';
+    this.style.height = Math.min(this.scrollHeight, 80) + 'px';
+  });
+});
+// ─────────────────────────────────────────────────────────────────────────────
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closeScheduleDrawer();
+});
+// ─────────────────────────────────────────────────────────────────────────────
+</script>
+
 </body>
 </html>

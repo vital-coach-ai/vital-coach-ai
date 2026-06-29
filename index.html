@@ -29,7 +29,7 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
 .logo-title-wrap{flex:1;min-width:0;overflow:hidden;}
 .logo-header h1{font-family:'Clash Display','Syne',sans-serif;font-size:1.8rem;font-weight:800;color:#ffffff;letter-spacing:-0.4px;}
 .logo-header p{font-size:1rem;color:#888888;margin-top:2px;}
-@media(max-width:480px){.logo-header p{display:none;}.logo-header h1{font-size:1.2rem;}}
+@media(max-width:480px){.logo-header p{display:none;}.logo-header h1{font-size:1.2rem;}.logo-icon-wrap img{width:44px;height:44px;}.logo-header{gap:8px;}}
 .tab-row{display:flex;border:none;border-bottom:2px solid #2a2a2a;border-radius:0;overflow:visible;margin-bottom:1.5rem;background:#161616;}
 .tab{flex:1;padding:10px 4px 10px;font-family:'Clash Display','Syne',sans-serif;font-size:11.5px;font-weight:500;background:transparent;color:#666666;border:none;border-bottom:3px solid transparent;margin-bottom:-2px;cursor:pointer;transition:color 0.22s ease,border-color 0.22s ease;}
 .tab:not(:last-child){border-right:none;}
@@ -426,7 +426,7 @@ select option{background:#2a2a2a;color:#ffffff;}
   <div class="trust-bar">Free to start &nbsp;·&nbsp; No credit card required &nbsp;·&nbsp; Takes 2 minutes</div>
   <div class="tab-row">
     <button class="tab active" onclick="switchTab('checkin',this)">&#9825; Daily Check-in</button>
-    <button class="tab" onclick="switchTab('plan',this)">&#9998; Build My Plan</button>
+    <button id="plan-tab-btn" class="tab" onclick="switchTab('plan',this)">&#9998; Build My Plan</button>
     <button class="tab" onclick="switchTab('realitycheck',this);renderRealityCheck()">&#9889; Get Your Life Together</button>
     <button class="tab" onclick="switchTab('foodlog',this);renderFoodLog()">&#127822; Food Log</button>
   </div>
@@ -613,6 +613,11 @@ select option{background:#2a2a2a;color:#ffffff;}
     <div id="planResponse"></div>
   </div>
 
+  <div id="myPlanView" style="display:none;">
+    <div id="myPlanContent"></div>
+    <button class="ask-btn" style="background:none;border:1.5px solid #E82C2C;color:#E82C2C;margin-top:0.5rem;" onclick="showPlanForm()">&#8635; Change My Plan</button>
+  </div>
+
   </div>
 
   <div id="realitycheck" class="page">
@@ -685,6 +690,7 @@ function _dbRowToPlan(row) {
     daysPerWeek: row.days_per_week,
     diet:        row.diet,
     savedAt:     row.saved_at,
+    planText:    row.plan_text,
   };
 }
 
@@ -1137,7 +1143,7 @@ function getSelectedMulti(){return Array.from(document.querySelectorAll('.pill.m
 function getSelectedGoals(){return Array.from(document.querySelectorAll('.pill.goal-multi.selected')).map(b=>b.textContent.trim());}
 function getSelectedWorkouts(){return Array.from(document.querySelectorAll('.pill.workout-multi.selected')).map(b=>b.textContent.trim());}
 function renderMarkdown(md){
-  const lines=md.split('\n');
+  const lines=md.split('\n').filter(l=>!/^~\s*$/.test(l));
   const out=[];
   let inUl=false,inOl=false;
   const inline=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\*(.*?)\*/g,'<em>$1</em>');
@@ -1156,15 +1162,16 @@ function renderMarkdown(md){
   closeList();
   return out.join('');
 }
-async function callClaude(prompt,targetId,heading){
+async function callClaude(prompt,targetId,heading,maxTokens=1000){
   const div=document.getElementById(targetId);
   div.innerHTML='<div class="response-card"><h3>&#9825; '+heading+'</h3><div class="loading-dots"><span></span><span></span><span></span></div><p style="font-size:13px;color:#888;margin-top:10px">Building your plan — this takes about 15 seconds…</p></div>';
   try{
-    const res=await fetch('/.netlify/functions/claude-proxy',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-5',max_tokens:1000,messages:[{role:'user',content:prompt}]})});
+    const res=await fetch('/.netlify/functions/claude-proxy',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-5',max_tokens:maxTokens,messages:[{role:'user',content:prompt}]})});
     const data=await res.json();
     const text=data.content?.map(c=>c.text||'').join('')||'Something went wrong.';
     div.innerHTML='<div class="response-card"><h3>&#9825; '+heading+'</h3><div class="body">'+renderMarkdown(text)+'</div></div>';
-  }catch(e){div.innerHTML='<div class="response-card"><p style="color:#c01f1f">Something went wrong. Please try again.</p></div>';}
+    return text;
+  }catch(e){div.innerHTML='<div class="response-card"><p style="color:#c01f1f">Something went wrong. Please try again.</p></div>';return null;}
 }
 async function getCheckinAdvice(){
   if(!mood){alert('Please select a mood first!');return;}
@@ -1210,8 +1217,8 @@ async function generatePlan(){
   const dietStr=diet.length?diet.join(', '):'none';
   const dietContext=dietNotes.length?'\n- Diet rules (strictly follow): '+dietNotes.join(' '):'';
   const prompt='You are an expert fitness and nutrition coach at Vital Coach AI. Create a single cohesive personalized plan that addresses ALL of the user\'s goals together:\n\n- Age: '+(age||'?')+', Sex: '+(sex||'?')+'\n- Height: '+(height||'?')+', Weight: '+(weight||'?')+'lbs\n- Activity: '+(activity||'?')+'\n- Goals: '+goalsStr+'\n- Workout preference: '+workoutStr+'\n- Days/week: '+(days||'?')+'\n- Diet: '+dietStr+dietContext+'\n- Conditions: '+(conditions||'none')+'\n- Notes: '+(extra||'none')+'\n\nProvide one integrated plan:\n1. **Weekly workout routine** with specific exercises, sets/reps — structured to advance all goals simultaneously, using the specified workout locations/equipment\n2. **Sample daily diet plan** with meals and portions\n3. **Three key tips** personalized to their combined goals\nEnd with a short motivational note.';
-  await callClaude(prompt,'planResponse','Your personalized plan');
-  const planData={goal:goalsStr,goals,height,weight,sex,activity,workoutPref:workoutStr,daysPerWeek:days,diet,savedAt:new Date().toISOString()};
+  const planText = await callClaude(prompt,'planResponse','Your personalized plan',4000);
+  const planData={goal:goalsStr,goals,height,weight,sex,activity,workoutPref:workoutStr,daysPerWeek:days,diet,savedAt:new Date().toISOString(),planText};
   try {
     const { data: { user } } = await supabaseClient.auth.getUser();
     if (user) {
@@ -1227,6 +1234,7 @@ async function generatePlan(){
         days_per_week:planData.daysPerWeek,
         diet:         planData.diet,
         saved_at:     planData.savedAt,
+        plan_text:    planData.planText,
       }, { onConflict: 'user_id' });
       if (error) throw error;
       _planContextCache = planData;
@@ -1235,6 +1243,7 @@ async function generatePlan(){
     console.error('[generatePlan] failed to save plan context', e);
   }
   loadPlanBanner();
+  renderPlanTab();
 }
 
 function workoutDayToday(daysPerWeek){
@@ -1323,12 +1332,58 @@ async function checkSubscription() {
   renderPlanTab();
 }
 
-function renderPlanTab() {
+async function renderPlanTab() {
   const paywallEl = document.getElementById('paywallSection');
   const planFormEl = document.getElementById('planForm');
+  const myPlanEl = document.getElementById('myPlanView');
+  const tabBtn = document.getElementById('plan-tab-btn');
   if (paywallEl) paywallEl.style.display = 'none';
-  if (planFormEl) planFormEl.style.display = 'block';
+  const p = await getPlanContext();
+  if (p?.planText) {
+    if (planFormEl) planFormEl.style.display = 'none';
+    if (myPlanEl) {
+      document.getElementById('myPlanContent').innerHTML = '<div class="response-card"><h3>&#9825; My Plan</h3><div class="body">'+renderMarkdown(p.planText)+'</div></div>';
+      myPlanEl.style.display = 'block';
+    }
+    if (tabBtn) tabBtn.innerHTML = '&#9998; My Plan';
+  } else {
+    if (planFormEl) planFormEl.style.display = 'block';
+    if (myPlanEl) myPlanEl.style.display = 'none';
+    if (tabBtn) tabBtn.innerHTML = '&#9998; Build My Plan';
+  }
   loadPlanBanner();
+}
+function prePopulatePlanForm() {
+  const p = _planContextCache;
+  if (!p) return;
+  const hm = (p.height || '').match(/^(\d+)' (\d+)"/);
+  if (hm) { document.getElementById('heightFt').value = hm[1]; document.getElementById('heightIn').value = hm[2]; }
+  if (p.weight)   document.getElementById('weight').value   = p.weight;
+  if (p.sex)      document.getElementById('sex').value      = p.sex;
+  if (p.activity) document.getElementById('activity').value = p.activity;
+  document.querySelectorAll('#planForm .pill.goal-multi').forEach(b => b.classList.remove('selected'));
+  (p.goals || []).forEach(g => {
+    document.querySelectorAll('#planForm .pill.goal-multi').forEach(b => { if (b.textContent.trim() === g) b.classList.add('selected'); });
+  });
+  document.querySelectorAll('#planForm .pill.workout-multi').forEach(b => b.classList.remove('selected'));
+  if (p.workoutPref && p.workoutPref !== 'not specified') {
+    p.workoutPref.split(', ').forEach(w => {
+      document.querySelectorAll('#planForm .pill.workout-multi').forEach(b => { if (b.textContent.trim() === w) b.classList.add('selected'); });
+    });
+  }
+  document.querySelectorAll('.pill[data-group="days"]').forEach(b => {
+    b.classList.remove('selected');
+    if (b.textContent.trim() === String(p.daysPerWeek)) { b.classList.add('selected'); days = b.textContent.trim(); }
+  });
+  document.querySelectorAll('#planForm .pill.multi').forEach(b => b.classList.remove('selected'));
+  (p.diet || []).forEach(d => {
+    document.querySelectorAll('#planForm .pill.multi').forEach(b => { if (b.textContent.trim() === d) b.classList.add('selected'); });
+  });
+}
+function showPlanForm() {
+  document.getElementById('myPlanView').style.display = 'none';
+  document.getElementById('planForm').style.display = 'block';
+  prePopulatePlanForm();
 }
 
 async function startCheckout(callerBtn) {

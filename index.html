@@ -253,6 +253,11 @@ select option{background:#2a2a2a;color:#ffffff;}
 .sched-food-name{color:#bbb;flex:1;}
 .sched-food-cals{color:#666;flex-shrink:0;}
 .sched-empty-log{font-size:12px;color:#444;font-style:italic;}
+.sched-week-header{display:flex;align-items:center;justify-content:space-between;padding:10px 4px 6px;cursor:pointer;user-select:none;}
+.sched-week-header-label{font-family:'Clash Display','Syne',sans-serif;font-size:12px;font-weight:700;color:#666;text-transform:uppercase;letter-spacing:0.08em;}
+.sched-week-chevron{color:#555;font-size:10px;transition:transform 0.2s ease;}
+.sched-week-section.collapsed .sched-week-chevron{transform:rotate(-90deg);}
+.sched-week-section.collapsed .sched-week-body{display:none;}
 .schedule-chat{flex-shrink:0;border-top:1px solid #1e1e1e;background:#0d0d0d;padding:12px 14px 16px;}
 .schedule-chat-label{font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#555;margin-bottom:8px;}
 .schedule-chat-history{max-height:180px;overflow-y:auto;margin-bottom:10px;display:flex;flex-direction:column;gap:7px;}
@@ -1893,11 +1898,11 @@ function closeScheduleDrawer() {
   document.getElementById('schedule-btn').classList.remove('open');
 }
 
-function setScheduleTimeframe(tf, btn) {
+async function setScheduleTimeframe(tf, btn) {
   scheduleTimeframe = tf;
   document.querySelectorAll('.tf-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
-  if (_scheduleCache) renderScheduleDayList(_scheduleCache);
+  if (_scheduleCache) await ensureScheduleDays(tf);
 }
 
 function scheduleWeekStart() {
@@ -1937,7 +1942,7 @@ async function loadOrGenerateSchedule() {
 
     if (data && Array.isArray(data.schedule_data) && data.schedule_data.length >= 7) {
       _scheduleCache = data.schedule_data;
-      renderScheduleDayList(_scheduleCache);
+      await ensureScheduleDays(scheduleTimeframe);
       return;
     }
 
@@ -1949,6 +1954,7 @@ async function loadOrGenerateSchedule() {
     }
 
     await generateSchedule(planCtx, weekStart, user.id);
+    await ensureScheduleDays(scheduleTimeframe);
   } catch(e) {
     console.error('[loadOrGenerateSchedule]', e);
     const list = document.getElementById('schedule-day-list');
@@ -1994,8 +2000,71 @@ Use "Rest" for rest days. Follow a logical split for their days/week. Lower calo
     schedule_data: days,
     updated_at: new Date().toISOString()
   }, { onConflict: 'user_id,week_start' });
+}
 
-  renderScheduleDayList(days);
+async function ensureScheduleDays(tf) {
+  const counts = { '1W': 7, '2W': 14, '1M': 30 };
+  const needed = counts[tf] || 7;
+  if (!_scheduleCache || _scheduleCache.length >= needed) { renderScheduleDayList(_scheduleCache || []); return; }
+  const list = document.getElementById('schedule-day-list');
+  list.className = 'schedule-day-placeholder';
+  list.innerHTML = '<div class="loading-dots"><span></span><span></span><span></span></div><p style="font-size:13px;color:#888;margin-top:10px">Extending your schedule…</p>';
+  try {
+    const { data: { user } } = await supabaseClient.auth.getUser();
+    const planCtx = await getPlanContext();
+    if (!planCtx) { renderScheduleDayList(_scheduleCache); return; }
+    await extendSchedule(planCtx, scheduleWeekStart(), user.id, needed);
+    renderScheduleDayList(_scheduleCache);
+  } catch(e) {
+    console.error('[ensureScheduleDays]', e);
+    const list = document.getElementById('schedule-day-list');
+    list.className = 'schedule-day-placeholder';
+    list.innerHTML = '<p style="color:#c01f1f;font-size:14px;">Failed to extend schedule. Please try again.</p>';
+  }
+}
+
+async function extendSchedule(planCtx, weekStart, userId, targetCount) {
+  const dietStr = planCtx.diet && planCtx.diet.length ? planCtx.diet.join(', ') : 'no restrictions';
+  while (_scheduleCache.length < targetCount) {
+    const chunkSize = Math.min(7, targetCount - _scheduleCache.length);
+    const lastTwo = _scheduleCache.slice(-2);
+    const lastDate = _scheduleCache[_scheduleCache.length - 1].date;
+    const nextDateObj = new Date(lastDate + 'T00:00:00');
+    nextDateObj.setDate(nextDateObj.getDate() + 1);
+    const nextDateStr = nextDateObj.toISOString().slice(0, 10);
+    const prompt = `You are a fitness and nutrition coach. Continue this schedule starting from ${nextDateStr}.
+
+User plan:
+- Goal: ${planCtx.goal}
+- Trains ${planCtx.daysPerWeek} days/week (${planCtx.workoutPref})
+- Diet: ${dietStr}
+- Height: ${planCtx.height}, Weight: ${planCtx.weight}lbs
+
+Last 2 days for context (continue the workout split consistently):
+${JSON.stringify(lastTwo)}
+
+Return ONLY a valid JSON array of exactly ${chunkSize} objects. No markdown, no explanation — raw JSON only. Each object:
+{"date":"YYYY-MM-DD","workout_type":"Push Day","workout_details":"Max 2 sentences.","meal_targets":{"calories":2200,"protein":160,"carbs":220,"fat":75},"notes":"One sentence."}
+
+Start dates from ${nextDateStr}. Continue the workout split logically from where the last days left off.`;
+    const res = await fetch('/.netlify/functions/claude-proxy', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ model: 'claude-sonnet-4-6', max_tokens: 2000, messages: [{ role: 'user', content: prompt }] })
+    });
+    const resData = await res.json();
+    const text = (resData.content?.map(c => c.text || '').join('') || '').trim();
+    const cleaned = text.replace(/^```json?\s*/i, '').replace(/\s*```$/i, '');
+    const newDays = JSON.parse(cleaned);
+    if (!Array.isArray(newDays) || newDays.length < chunkSize) throw new Error('Invalid extended schedule chunk from AI');
+    _scheduleCache = [..._scheduleCache, ...newDays];
+    await supabaseClient.from('schedule').upsert({
+      user_id: userId,
+      week_start: weekStart,
+      schedule_data: _scheduleCache,
+      updated_at: new Date().toISOString()
+    }, { onConflict: 'user_id,week_start' });
+  }
 }
 
 function renderScheduleDayList(allDays) {
@@ -2005,13 +2074,12 @@ function renderScheduleDayList(allDays) {
   const days = allDays.slice(0, count);
   const today = todayStr();
 
-  list.className = '';
-  list.innerHTML = days.map((day, i) => {
+  const dayHtml = (day, absIdx) => {
     const isToday = day.date === today;
     const isPast = day.date < today;
     const isRest = day.workout_type === 'Rest';
     const m = day.meal_targets || {};
-    return `<div class="sched-day-row${isToday ? ' is-today' : ''}${isPast ? ' is-past' : ''}" onclick="toggleDayDetail(this,${i})" data-date="${day.date}" data-idx="${i}">
+    return `<div class="sched-day-row${isToday ? ' is-today' : ''}${isPast ? ' is-past' : ''}" onclick="toggleDayDetail(this,${absIdx})" data-date="${day.date}" data-idx="${absIdx}">
       <div>
         <div class="sched-day-label">${new Date(day.date+'T00:00:00').toLocaleDateString('en-US',{weekday:'short'})} <span class="sched-day-date">${formatScheduleDate(day.date)}</span>${isToday ? '<span class="sched-today-pip"></span>' : ''}<span class="sched-day-chevron">▼</span></div>
         <div class="sched-workout-type${isRest ? ' is-rest' : ''}">${day.workout_type}</div>
@@ -2020,6 +2088,35 @@ function renderScheduleDayList(allDays) {
         <div class="sched-macro">${m.calories || '—'} cal</div>
         <div class="sched-macro-sub">${m.protein || '—'}g protein</div>
       </div>
+    </div>`;
+  };
+
+  list.className = '';
+
+  if (scheduleTimeframe === '1W') {
+    list.innerHTML = days.map((day, i) => dayHtml(day, i)).join('');
+    return;
+  }
+
+  const weekRangeLabel = (chunk) => {
+    const first = new Date(chunk[0].date + 'T00:00:00');
+    const last = new Date(chunk[chunk.length - 1].date + 'T00:00:00');
+    const fmt = d => d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    return `${fmt(first)} – ${fmt(last)}`;
+  };
+
+  const chunks = [];
+  for (let i = 0; i < days.length; i += 7) chunks.push(days.slice(i, i + 7));
+
+  list.innerHTML = chunks.map((chunk, wi) => {
+    const collapsed = scheduleTimeframe === '1M' && wi > 0;
+    const startAbsIdx = wi * 7;
+    return `<div class="sched-week-section${collapsed ? ' collapsed' : ''}">
+      <div class="sched-week-header" onclick="this.parentElement.classList.toggle('collapsed')">
+        <span class="sched-week-header-label">Week ${wi + 1} &middot; ${weekRangeLabel(chunk)}</span>
+        <span class="sched-week-chevron">▼</span>
+      </div>
+      <div class="sched-week-body">${chunk.map((day, i) => dayHtml(day, startAbsIdx + i)).join('')}</div>
     </div>`;
   }).join('');
 }
